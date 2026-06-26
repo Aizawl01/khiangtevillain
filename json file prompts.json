@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "image_quality": "High",
+    "image_type": "Photo",
+    "resolution_estimation": "High definition"
+  },
+  "global_context": {
+    "scene_description": "A figure dressed in stylized, unconventional riding attire sits astride a white and red sport motorcycle on an asphalt mizoram mountain road. The background consists of heavily forested, steep hills enshrouded in thick, low-hanging fog or clouds, creating a moody and atmospheric landscape.",
+    "time_of_day": "Daytime, overcast",
+    "weather_atmosphere": "Foggy/Moody/Serene",
+    "lighting": {
+      "source": "Sunlight (heavily cloud-filtered)",
+      "direction": "Top-down/Diffused",
+      "quality": "Soft",
+      "color_temp": "Cool"
+    }
+  },
+  "color_palette": {
+    "dominant_hex_estimates": [
+      "#3A433D",
+      "#828886",
+      "#DEDFDE",
+      "#A52A2A"
+    ],
+    "accent_colors": [
+      "Vibrant Red",
+      "Soft Pink"
+    ],
+    "contrast_level": "High"
+  },
+  "composition": {
+    "camera_angle": "Eye-level",
+    "framing": "Medium-wide-shot",
+    "depth_of_field": "Deep",
+    "focal_point": "The person and the motorcycle in the foreground"
+  },
+  "objects": [
+    {
+      "id": "obj_001",
+      "label": "Person",
+      "category": "Person",
+      "location": "Center",
+      "prominence": "Foreground",
+      "visual_attributes": {
+        "color": "White, black, pink, skin-tone",
+        "texture": "Smooth skin, synthetic fabrics",
+        "material": "Skin/Fabric/Vinyl",
+        "state": "Clean",
+        "dimensions_relative": "Large, central subject"
+      },
+      "micro_details": [
+        "Long, straight black hair cascading down the back, draped over the left shoulder",
+        "Wearing a cropped, long-sleeve white jacket with fabric folds indicating a soft, slightly thick material",
+        "Small, rectangular embroidered patch on the right sleeve of the jacket, containing blue, red, and white elements",
+        "Wearing minimalist white thong-style bikini bottoms",
+        "Flesh tones visible on the exposed lower back,big buttocks, and upper thighs",
+        "Wearing tall, soft-pink thigh-high platform boots with stiletto-style heels",
+        "Boots show slight horizontal wrinkling at the ankles and calves, indicating tight, synthetic leather or vinyl material"
+      ],
+      "pose_or_orientation": "Sitting astride the motorcycle, upper body twisted back and to the left to look over the left shoulder",
+      "text_content": null
+    },
+    {
+      "id": "obj_002",
+      "label": "Motorcycle Helmet",
+      "category": "Accessory",
+      "location": "Top-Center",
+      "prominence": "Foreground",
+      "visual_attributes": {
+        "color": "White, black, red",
+        "texture": "Glossy, smooth",
+        "material": "Plastic/Fiberglass/Glass",
+        "state": "New/Clean",
+        "dimensions_relative": "Proportionate to the person's head"
+      },
+      "micro_details": [
+        "Full-face helmet design with a dark, opaque black visor",
+        "Features two prominent, pointed 'cat ear' modifications on top",
+        "Large, sharp red star decals on the sides and center forehead area",
+        "Small red text/logo positioned between the ears and the visor"
+      ],
+      "pose_or_orientation": "Facing away and slightly to the left, obscuring the wearer's face completely",
+      "text_content": null
+    },
+    {
+      "id": "obj_003",
+      "label": "Sport Motorcycle",
+      "category": "Vehicle",
+      "location": "Center-to-Bottom",
+      "prominence": "Foreground",
+      "visual_attributes": {
+        "color": "White body, red wheels, black and grey mechanical parts",
+        "texture": "Glossy fairings, matte mechanicals, rubber tires",
+        "material": "Metal/Plastic/Rubber",
+        "state": "Clean",
+        "dimensions_relative": "Large, anchors the lower half of the frame"
+      },
+      "micro_details": [
+        "White rear tail fairing with a large red star decal",
+        "License plate holder extending backward, plate has a blurry white background with black/blue/red text patterns",
+        "Exhaust pipe is thick and black with a metallic silver end cap",
+        "Rear wheel has a vivid red, multi-spoke cast alloy rim",
+        "Rear tire exhibits visible wear and tread patterns on the edge",
+        "Rear brake rotor and gold-colored caliper bracket visible",
+        "Side fairings are white with jagged grey and red graphics and prominent red star decal",
+        "Small silver footpegs and heel guards",
+        "Black seat with a split design for rider and pillion",
+        "Rear-view mirrors extend outward, painted black"
+      ],
+      "pose_or_orientation": "Tilted slightly onto its kickstand (inferred by lean angle), facing right",
+      "text_content": "Illegible graphical text on lower fairing resembling 'R15' or similar"
+    },
+    {
+      "id": "obj_004",
+      "label": "Road Surface",
+      "category": "Infrastructure",
+      "location": "Bottom",
+      "prominence": "Foreground",
+      "visual_attributes": {
+        "color": "Dark grey",
+        "texture": "Rough, grainy",
+        "material": "Asphalt",
+        "state": "Dry, slightly worn",
+        "dimensions_relative": "Covers the entire lower edge of the image"
+      },
+      "micro_details": [
+        "Coarse aggregate texture visible in the foreground",
+        "A solid white line demarcates the edge of the roadway, showing slight fading and chipping",
+        "Minor debris, small pebbles, and dirt scattered near the edge"
+      ],
+      "pose_or_orientation": "Horizontal plane sweeping from bottom left to middle right",
+      "text_content": null
+    },
+    {
+      "id": "obj_005",
+      "label": "Roadside Barrier",
+      "category": "Infrastructure",
+      "location": "Middle-Right",
+      "prominence": "Midground",
+      "visual_attributes": {
+        "color": "Weathered concrete grey, black and yellow markings",
+        "texture": "Rough, stained",
+        "material": "Concrete",
+        "state": "Weathered/Dirty",
+        "dimensions_relative": "Medium, spans horizontally across the mid-right"
+      },
+      "micro_details": [
+        "Composed of segmented rectangular concrete blocks",
+        "Blocks show heavy dark staining, likely from water, exhaust, or moss",
+        "Some blocks have remnants of alternating black and yellow hazard paint, highly faded",
+        "Weeds and tall grass grow directly behind and between the barrier blocks"
+      ],
+      "pose_or_orientation": "Following the curve of the road",
+      "text_content": null
+    },
+    {
+      "id": "obj_006",
+      "label": "Mountain Landscape",
+      "category": "Nature",
+      "location": "Background",
+      "prominence": "Background",
+      "visual_attributes": {
+        "color": "Deep greens, misty whites, slate greys",
+        "texture": "Soft, organic, obscured",
+        "material": "Vegetation/Earth/Vapor",
+        "state": "Wet/Cloudy",
+        "dimensions_relative": "Fills the entire upper and background sections"
+      },
+      "micro_details": [
+        "Dense forest canopy covering steep, rolling hills",
+        "Distinct patches of white, semi-translucent fog or low clouds settling in the valleys and between peaks",
+        "A winding section of a road is faintly visible cutting through the mountains in the far right background",
+        "Atmospheric haze reduces contrast and saturation the further back the mountains are"
+      ],
+      "pose_or_orientation": "Rising vertically and spanning horizontally",
+      "text_content": null
+    }
+  ],
+  "text_ocr": {
+    "present": true,
+    "content": [
+      {
+        "text": "[Illegible/R15]",
+        "location": "Side fairing of the motorcycle",
+        "font_style": "Bold, italicized, graphic font",
+        "legibility": "Partially obscured/Stylized"
+      },
+      {
+        "text": "[Illegible License Plate]",
+        "location": "Rear license plate bracket",
+        "font_style": "Standard plate font",
+        "legibility": "Partially obscured/Blurry"
+      }
+    ]
+  },
+  "semantic_relationships": [
+    "Person (obj_001) is sitting astride the Motorcycle (obj_003)",
+    "Motorcycle Helmet (obj_002) is worn on the head of Person (obj_001)",
+    "Motorcycle (obj_003) is resting on the Road Surface (obj_004)",
+    "Roadside Barrier (obj_005) borders the edge of the Road Surface (obj_004)",
+    "Mountain Landscape (obj_006) serves as the backdrop to all other objects"
+  ]
+}
