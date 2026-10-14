@@ -1,17 +1,16 @@
-// Show Zoom Overlay
-function showZoom() {
-    zoomOverlay.style.display = "block";
-    glitchImage.classList.add('no-glitch'); // Disable small image glitch
-    // Enable glitch effect on zoomed image
-    const zoomedImage = zoomOverlay.querySelector('img');
-    zoomedImage.classList.remove('no-glitch');
-}
-
-// Hide Zoom Overlay
-function hideZoom() {
-    zoomOverlay.style.display = "none";
-    glitchImage.classList.remove('no-glitch'); // Re-enable small image glitch
-    // Disable glitch effect on zoomed image
-    const zoomedImage = zoomOverlay.querySelector('img');
-    zoomedImage.classList.add('no-glitch');
-}
+const prompts=[
+{category:'image',title:'Mizo Neon Rider',text:'Cinematic editorial photo of a rider on a mountain road in Mizoram, mist folding through green hills, black and red cyberpunk riding gear, wet asphalt reflections, low-angle 35mm lens, sharp subject, atmospheric film grain.'},
+{category:'image',title:'Album Cover System',text:'Square experimental album cover for [ARTIST / TRACK], one bold central symbol, ink-black negative space, acid-lime and hot-pink accents, tactile photocopy texture, modern underground electronic music identity, no text.'},
+{category:'video',title:'Cyber City Arrival',text:'A lone creator arrives in a rain-soaked future city at night. Handheld camera follows from behind, neon signs flicker through fog, slow motion rain, documentary energy, cinematic 16:9, 8 seconds, no dialogue.'},
+{category:'video',title:'Music Visual Loop',text:'Seamless 6-second loop: chrome mask slowly turns toward camera, liquid neon ripples across its surface, black void background, high contrast, hypnotic, album visualizer, centered composition.'},
+{category:'music',title:'Hill City After Dark',text:'Create a dark alternative electronic track at 92 BPM: distant choir texture, warped Mizo-inspired percussion feel, sub bass, vinyl crackle, one memorable synth motif, cinematic build, no vocals.'},
+{category:'music',title:'Trailer Pulse',text:'Instrumental cinematic trap cue, 110 BPM, sparse piano notes, distorted bass, rising impacts, tense and confident, designed for a 30-second tech-fashion reel, clean ending hit.'},
+{category:'code',title:'Creative Portfolio Brief',text:'Build a single-page portfolio for an AI filmmaker and creative technologist. Use a dark cyberpunk editorial style, accessible semantic HTML, responsive CSS, no framework, no paid APIs. Include work, prompt library, contact and copy-to-clipboard buttons.'},
+{category:'code',title:'Prompt Organizer',text:'Create a lightweight browser-only prompt library in vanilla JavaScript. Prompts need category filtering, search, copy button, share fallback, and localStorage favorites. No backend and no external credentials.'}
+];
+const grid=document.querySelector('#prompt-grid'),filters=document.querySelectorAll('.filter'),toast=document.querySelector('#toast');
+function showToast(message){toast.textContent=message;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1800)}
+async function copyPrompt(text){try{await navigator.clipboard.writeText(text);showToast('PROMPT COPIED');}catch{const area=document.createElement('textarea');area.value=text;document.body.append(area);area.select();document.execCommand('copy');area.remove();showToast('PROMPT COPIED');}}
+async function sharePrompt(item){const data={title:item.title,text:item.text};if(navigator.share){try{await navigator.share(data);return}catch(e){if(e.name==='AbortError')return}}copyPrompt(item.text)}
+function render(category='all'){grid.innerHTML=prompts.filter(p=>category==='all'||p.category===category).map((p,i)=>`<article class="prompt-card"><div class="card-meta"><span>${p.category}</span><span>0${i+1}</span></div><h3>${p.title}</h3><p class="prompt-copy">${p.text}</p><div class="card-actions"><button class="mini-button" data-copy="${i}">Copy prompt</button><button class="mini-button" data-share="${i}">Share</button></div></article>`).join('');document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>copyPrompt(prompts[+b.dataset.copy].text));document.querySelectorAll('[data-share]').forEach(b=>b.onclick=()=>sharePrompt(prompts[+b.dataset.share]));}
+filters.forEach(button=>button.addEventListener('click',()=>{filters.forEach(b=>b.classList.remove('active'));button.classList.add('active');render(button.dataset.category)}));render();document.querySelector('#year').textContent=new Date().getFullYear();
