@@ -1,0 +1,3131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClearSpark — Multi-Ratio Local Gemini & Veo Watermark Remover</title>
+  <meta name="description" content="100% Client-side Gemini & Veo watermark remover for all 15 aspect ratios and resolution tiers (0.5K, 1K, 2K, 4K, 720p, 1080p). Runs locally in your browser." />
+  <style>
+    :root {
+      --bg-base: #0b0f17;
+      --bg-panel: #111827;
+      --bg-card: #1e293b;
+      --bg-card-hover: #263449;
+      --bg-input: #0f172a;
+      --border: #2e3c51;
+      --border-focus: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --indigo: #818cf8;
+      --emerald: #10b981;
+      --emerald-soft: rgba(16, 185, 129, 0.14);
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      --mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: rgba(17, 24, 39, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0b0f17;
+      font-weight: 800;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .privacy-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: var(--emerald-soft);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .privacy-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .mode-tabs {
+      display: flex;
+      background: var(--bg-input);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .mode-tab {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .mode-tab:hover {
+      color: var(--text-main);
+    }
+
+    .mode-tab.active {
+      background: var(--bg-card);
+      color: var(--accent);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-main);
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--bg-card-hover);
+      border-color: #475569;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+      border-color: transparent;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    .btn-emerald {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-color: transparent;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-emerald:hover:not(:disabled) {
+      filter: brightness(1.08);
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 360px 1fr 320px;
+      gap: 0;
+      min-height: calc(100vh - 61px);
+    }
+
+    @media (max-width: 1180px) {
+      .workspace {
+        grid-template-columns: 335px 1fr;
+      }
+      .right-sidebar {
+        grid-column: 1 / -1;
+        border-left: none !important;
+        border-top: 1px solid var(--border);
+      }
+    }
+
+    @media (max-width: 820px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .left-sidebar {
+        border-right: none !important;
+        border-bottom: 1px solid var(--border);
+      }
+    }
+
+    .left-sidebar, .right-sidebar {
+      background: var(--bg-panel);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+      max-height: calc(100vh - 61px);
+    }
+
+    .left-sidebar {
+      border-right: 1px solid var(--border);
+    }
+
+    .right-sidebar {
+      border-left: 1px solid var(--border);
+    }
+
+    @media (max-width: 1180px) {
+      .left-sidebar, .right-sidebar {
+        max-height: none;
+      }
+    }
+
+    .panel-section {
+      background: rgba(30, 41, 59, 0.45);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    .badge-tag {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 99px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: none;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .control-val {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--accent);
+      background: rgba(15, 23, 42, 0.7);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    select, input[type="number"], input[type="text"] {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-family: var(--font);
+      outline: none;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--border-focus);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: var(--bg-input);
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid #0b0f17;
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    .preset-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 7px 9px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: all 0.15s ease;
+    }
+
+    .preset-btn span.sub {
+      font-size: 10px;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    .preset-btn:hover {
+      border-color: #475569;
+      color: var(--text-main);
+    }
+
+    .preset-btn.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--text-main);
+    }
+
+    .preset-btn.active span.sub {
+      color: #bae6fd;
+    }
+
+    .tool-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .tool-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 7px 6px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+
+    .tool-btn.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .center-stage {
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at center, #131c2e 0%, #090d16 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage-toolbar {
+      padding: 10px 16px;
+      background: rgba(17, 24, 39, 0.75);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .canvas-viewport {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      overflow: auto;
+      min-height: 460px;
+      user-select: none;
+    }
+
+    .canvas-container {
+      position: relative;
+      display: none;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #334155;
+      background-image:
+        linear-gradient(45deg, #1e293b 25%, transparent 25%),
+        linear-gradient(-45deg, #1e293b 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1e293b 75%),
+        linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      background-color: #0f172a;
+    }
+
+    canvas#mainCanvas {
+      display: block;
+      max-width: 100%;
+      max-height: calc(100vh - 230px);
+      width: auto;
+      height: auto;
+      cursor: crosshair;
+    }
+
+    canvas#overlayCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .dropzone {
+      max-width: 580px;
+      width: 100%;
+      border: 2px dashed #334155;
+      border-radius: var(--radius-lg);
+      background: rgba(17, 24, 39, 0.65);
+      padding: 36px 28px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .dropzone.dragover, .dropzone:hover {
+      border-color: var(--accent);
+      background: rgba(30, 41, 59, 0.75);
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.12);
+    }
+
+    .dropzone-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dropzone h2 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .dropzone p {
+      color: var(--text-muted);
+      font-size: 13px;
+      max-width: 440px;
+    }
+
+    .demo-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .video-bar {
+      display: none;
+      background: rgba(17, 24, 39, 0.92);
+      border-top: 1px solid var(--border);
+      padding: 12px 18px;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .video-controls-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .time-readout {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      min-width: 105px;
+    }
+
+    .export-progress-wrap {
+      display: none;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: #1e293b;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      transition: width 0.1s linear;
+    }
+
+    .loupe-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .loupe-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .loupe-box span {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .loupe-canvas {
+      width: 122px;
+      height: 122px;
+      border-radius: 4px;
+      border: 1px solid #334155;
+      image-rendering: pixelated;
+      background: #090d16;
+    }
+
+    .stat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 12px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      padding-bottom: 4px;
+      border-bottom: 1px dashed rgba(51, 65, 85, 0.5);
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .stat-row strong {
+      color: var(--text-main);
+      font-family: var(--mono);
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .nudge-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 32px);
+      gap: 4px;
+      justify-content: center;
+    }
+
+    .nudge-btn {
+      width: 32px;
+      height: 28px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nudge-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .batch-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 170px;
+      overflow-y: auto;
+    }
+
+    .batch-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .batch-item.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .batch-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 165px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 8, 15, 0.78);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      max-width: 780px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .ref-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .ref-table th, .ref-table td {
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      text-align: left;
+    }
+
+    .ref-table th {
+      background: var(--bg-card);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .ref-table tr:nth-child(even) {
+      background: rgba(15, 23, 42, 0.45);
+    }
+
+    .code-block {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #bae6fd;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .callout-note {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fde68a;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1e293b;
+      border: 1px solid var(--accent);
+      color: var(--text-main);
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      font-weight: 600;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.25s ease;
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon" title="ClearSpark Multi-Ratio Watermark Studio">✦</div>
+      <div>
+        <div class="brand-title">
+          ClearSpark Studio
+          <span class="badge-tag">v4.0 All-Ratio Catalog</span>
+        </div>
+        <div class="brand-subtitle">Auto-Detects All 15 Aspect Ratios &amp; Tiers (0.5K · 1K · 2K · 4K · 720p · 1080p)</div>
+      </div>
+    </div>
+
+    <div class="mode-tabs" role="tablist">
+      <button class="mode-tab active" id="tabImageMode" onclick="switchMediaMode('image')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+        Image Remover
+      </button>
+      <button class="mode-tab" id="tabVideoMode" onclick="switchMediaMode('video')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        Video Remover (Veo / MP4)
+      </button>
+    </div>
+
+    <div class="header-badges">
+      <div class="privacy-pill" title="Zero network calls. All pixel & frame math runs inside your browser's local memory.">
+        <span class="privacy-dot"></span>
+        100% Local • 0 Bytes Uploaded
+      </div>
+      <button class="btn btn-sm" onclick="toggleModal('ratioModal', true)">
+        📐 Aspect Ratio Table
+      </button>
+      <button class="btn btn-sm" onclick="toggleModal('githubModal', true)">
+        🚀 GitHub Pages Guide
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <div class="workspace">
+
+    <!-- LEFT SIDEBAR: MULTI-RATIO AUTO-DETECTION, MASKING & ENGINE CONTROLS -->
+    <aside class="left-sidebar">
+
+      <!-- 1. Multi-Ratio Catalog Auto-Detector & Quick Presets -->
+      <div class="panel-section">
+        <div class="section-header">
+          <span>1. Multi-Ratio Auto-Detection</span>
+          <span class="badge-tag" id="detectedBadge">Auto-Ready</span>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;" onclick="runSmartAutoDetect(true)" id="btnSnapLocate" title="Matches dimensions & aspect ratio against the 2026 Gemini/Veo catalog and verifies via High-Pass NCC + Post-Removal Seam Check">
+          🎯 Auto-Detect Ratio &amp; Position (HP-NCC)
+        </button>
+
+        <div class="control-group">
+          <label class="control-label" for="selRatioOverride">Catalog Profile / Aspect Preset</label>
+          <select id="selRatioOverride" onchange="applyCatalogProfileSelect(this.value)">
+            <option value="auto_catalog">✨ Auto-Detect (All 15 Ratios + Scaled)</option>
+            <optgroup label="Gemini 3.x / 2.5 Image Tiers">
+              <option value="tier_1k_std">1K Standard (1:1, 16:9, 9:16, 4:3, 3:2) → 48px @ 32px</option>
+              <option value="tier_1k_v2_916">1K V2 9:16 / 16:9 (768×1376, 1376×768) → 48px @ 73px</option>
+              <option value="tier_1k_1408">1K 16:9 Special (1408×768 / 768×1408) → 46px @ 32px</option>
+              <option value="tier_1k_r96">1K Large-Margin (1024, 1200×896) → 48px @ 96px</option>
+              <option value="tier_1k_v2_36">1K Small V2 Mark (All Ratios) → 36px @ 96px / 28px</option>
+              <option value="tier_2k_std">2K / 4K Canonical (All 14 Ratios) → 96px @ 64px</option>
+              <option value="tier_2k_r96">2K Square / 4:3 (2048×2048, 2400×1792) → 48px @ 96px</option>
+              <option value="tier_2k_2752_r89">2K 16:9 / 9:16 (2752×1536, 1536×2752) → 48px @ 89px</option>
+              <option value="tier_2k_2816_r192">2K Deep-Inset (2816×1536, 2752×1536) → 96px @ 192px</option>
+            </optgroup>
+            <optgroup label="Veo & Gemini 3.5+ Video">
+              <option value="veo_1080p_reloc">Veo 1080p (9:16 1080×1920 / 16:9 1920×1080) → 96px @ 132px</option>
+              <option value="veo_1080p_std">Veo 1080p Standard / Half-Scale → 96px@64 / 48px@96</option>
+              <option value="veo_720p_t1">Veo 720p Tier-1 (16:9 1280×720 / 9:16 720×1280) → 48px @ 72px</option>
+              <option value="veo_720p_t2">Veo 720p Tier-2 Compact (16:9 / 9:16) → 44px @ (29,40)</option>
+              <option value="veo_720p_reloc">Veo 720p Relocated / Alt Track → 48px@96 / 24px@48</option>
+              <option value="veo_sub720">Veo 480p / Projected (848×478) → 32px @ 24px</option>
+            </optgroup>
+            <optgroup label="Resized / Downscaled Derivative">
+              <option value="scaled_proportional">Proportional Resized (e.g. 286×512 → 23px @ 33px)</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+
+      <!-- 2. Selection & Masking Tool -->
+      <div class="panel-section">
+        <div class="section-header">
+          <span>2. Region &amp; Mask Fine-Tuning</span>
+          <button class="btn btn-sm" onclick="clearCustomMasks()" style="padding:2px 7px; font-size:11px;">Clear Brush</button>
+        </div>
+
+        <div class="tool-row">
+          <button class="tool-btn active" id="toolCorner" onclick="setMaskTool('corner')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z"/></svg>
+            Sparkle Box
+          </button>
+          <button class="tool-btn" id="toolRect" onclick="setMaskTool('rect')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"/></svg>
+            Drag Rect
+          </button>
+          <button class="tool-btn" id="toolBrush" onclick="setMaskTool('brush')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 2 4 4-14 14H4v-4L18 2z"/></svg>
+            Free Brush
+          </button>
+        </div>
+
+        <div class="control-group" id="brushSizeGroup" style="display:none;">
+          <div class="control-label">
+            <span>Brush Diameter</span>
+            <span class="control-val" id="valBrushSize">28 px</span>
+          </div>
+          <input type="range" id="rngBrushSize" min="6" max="120" value="28" oninput="updateBrushSize(this.value)" />
+        </div>
+
+        <div id="cornerSlidersGroup" style="display:flex; flex-direction:column; gap:9px;">
+          <div class="control-group">
+            <div class="control-label">
+              <span>Watermark Box Size</span>
+              <span class="control-val" id="valBoxSize">96 × 96 px</span>
+            </div>
+            <input type="range" id="rngBoxSize" min="14" max="220" step="1" value="96" oninput="updateCornerParams()" />
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Right Margin (Offset X)</span>
+              <span class="control-val" id="valMarginX">132 px</span>
+            </div>
+            <input type="range" id="rngMarginX" min="0" max="320" step="1" value="132" oninput="updateCornerParams()" />
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Bottom Margin (Offset Y)</span>
+              <span class="control-val" id="valMarginY">132 px</span>
+            </div>
+            <input type="range" id="rngMarginY" min="0" max="320" step="1" value="132" oninput="updateCornerParams()" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Restoration Engine & Tuning -->
+      <div class="panel-section">
+        <div class="section-header">
+          <span>3. Restoration Engine</span>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="selAlgorithm">Algorithm</label>
+          <select id="selAlgorithm" onchange="onAlgorithmChange()">
+            <option value="signed_hybrid">Signed Reverse-Alpha + Rim Cleanup (Best)</option>
+            <option value="signed_pure">Pure Signed Reverse-Alpha (Interior + Dark Rim)</option>
+            <option value="fmm_telea">Fast Marching Telea Inpainting (Any Logo)</option>
+            <option value="harmonic_pde">Multi-Scale Harmonic PDE + Grain</option>
+            <option value="patch_clone">Texture Patch Synthesis (Photographic)</option>
+          </select>
+        </div>
+
+        <div id="alphaControlsGroup" style="display:flex; flex-direction:column; gap:9px;">
+          <div class="control-group">
+            <div class="control-label">
+              <span>Bright Core Gain (α+)</span>
+              <span class="control-val" id="valAlphaGain">1.00×</span>
+            </div>
+            <input type="range" id="rngAlphaGain" min="0.40" max="1.60" step="0.02" value="1.00" oninput="updateAlgorithmParams()" />
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Dark Outline Gain (α−)</span>
+              <span class="control-val" id="valDarkGain">1.00×</span>
+            </div>
+            <input type="range" id="rngDarkGain" min="0.00" max="1.80" step="0.02" value="1.00" oninput="updateAlgorithmParams()" />
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Perimeter Ring Cleanup Blend</span>
+            <span class="control-val" id="valRimBlend">80%</span>
+          </div>
+          <input type="range" id="rngRimBlend" min="0" max="100" step="5" value="80" oninput="updateAlgorithmParams()" />
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>Micro-Texture Grain Matching</span>
+            <span class="control-val" id="valGrain">65%</span>
+          </div>
+          <input type="range" id="rngGrain" min="0" max="100" step="5" value="65" oninput="updateAlgorithmParams()" />
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:4px;">
+          <button class="btn btn-primary" style="flex:1;" onclick="processCurrentMedia()" id="btnProcessNow">
+            ✨ Apply Restoration
+          </button>
+          <button class="btn" onclick="resetToOriginal()" title="Revert to original (Shortcut: Z)">
+            Revert
+          </button>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- CENTER STAGE: INTERACTIVE CANVAS & MEDIA PLAYER -->
+    <main class="center-stage">
+
+      <!-- Top Stage Toolbar -->
+      <div class="stage-toolbar">
+        <div class="toolbar-group">
+          <input type="file" id="fileInput" accept="image/*,video/*" multiple style="display:none;" onchange="handleFileSelect(event)" />
+          <button class="btn btn-sm btn-primary" onclick="document.getElementById('fileInput').click()">
+            📂 Open Image / Video
+          </button>
+          <select id="selDemoPreset" style="width:auto; padding:4px 8px; font-size:12px;" onchange="loadSelectedDemo(this.value)">
+            <option value="9_16_scaled">🖼️ Demo 9:16 Scaled (286×512 @ 23px,33m)</option>
+            <option value="16_9_1k">🖼️ Demo 16:9 1K (1376×768 @ 48px,73m)</option>
+            <option value="9_16_1k">🖼️ Demo 9:16 1K (768×1376 @ 48px,73m)</option>
+            <option value="16_9_1408">🖼️ Demo 16:9 1408×768 (46px @ 32m)</option>
+            <option value="1_1_1k">🖼️ Demo 1:1 Square 1K (1024×1024 @ 48px,32m)</option>
+            <option value="4_3_1k">🖼️ Demo 4:3 Landscape (1200×896 @ 48px,32m)</option>
+            <option value="3_4_1k">🖼️ Demo 3:4 Portrait (896×1200 @ 48px,32m)</option>
+            <option value="3_2_2k">🖼️ Demo 3:2 Photo 2K (2528×1696 @ 96px,64m)</option>
+            <option value="1_1_2k_r96">🖼️ Demo 1:1 2K New (2048×2048 @ 48px,96m)</option>
+            <option value="16_9_2816">🖼️ Demo 16:9 2K Deep (2816×1536 @ 96px,192m)</option>
+            <option value="21_9_1k">🖼️ Demo 21:9 Ultrawide (1584×672 @ 48px,32m)</option>
+          </select>
+          <button class="btn btn-sm" onclick="loadDemoVideo()">
+            🎬 Demo 9:16 1080p Video
+          </button>
+        </div>
+
+        <div class="toolbar-group">
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); cursor:pointer;">
+            <input type="checkbox" id="chkShowMask" checked onchange="renderViewport()" />
+            Show Target Guide
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); cursor:pointer;">
+            <input type="checkbox" id="chkSplitView" onchange="toggleSplitCompare()" />
+            Split Wipe Compare
+          </label>
+          <div id="splitSliderWrap" style="display:none; align-items:center; gap:6px; width:110px;">
+            <input type="range" id="rngSplitPos" min="0" max="100" value="50" oninput="renderViewport()" title="Drag to compare Before vs After" />
+          </div>
+          <button class="btn btn-sm" onmousedown="setHoldCompare(true)" onmouseup="setHoldCompare(false)" onmouseleave="setHoldCompare(false)" ontouchstart="setHoldCompare(true)" ontouchend="setHoldCompare(false)">
+            👁️ Hold Original
+          </button>
+        </div>
+      </div>
+
+      <!-- Canvas Viewport -->
+      <div class="canvas-viewport" id="dropViewport">
+
+        <!-- Empty State Dropzone -->
+        <div class="dropzone" id="emptyDropzone" onclick="document.getElementById('fileInput').click()">
+          <div class="dropzone-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <h2>Drop Gemini Image or Veo Video (Any Aspect Ratio)</h2>
+          <p>
+            Automatically identifies all <strong>15 Gemini aspect ratios</strong> (<code>1:1</code>, <code>16:9</code>, <code>9:16</code>, <code>4:3</code>, <code>3:4</code>, <code>3:2</code>, <code>2:3</code>, <code>4:5</code>, <code>5:4</code>, <code>21:9</code>, <code>4:1</code>, <code>1:4</code>, <code>8:1</code>, <code>1:8</code>) across <code>0.5K–4K</code> &amp; <code>720p–1080p</code> tiers.
+          </p>
+          <div class="demo-buttons" onclick="event.stopPropagation()">
+            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+              Select Local Files
+            </button>
+            <button class="btn" onclick="loadSelectedDemo('16_9_1k')">
+              ✨ Try 16:9 1K Sample
+            </button>
+            <button class="btn" onclick="loadDemoVideo()">
+              🎬 Try 9:16 1080p Video
+            </button>
+          </div>
+        </div>
+
+        <!-- Active Media Canvas Container -->
+        <div class="canvas-container" id="canvasContainer">
+          <canvas id="mainCanvas" width="1024" height="1024"></canvas>
+          <canvas id="overlayCanvas" width="1024" height="1024"></canvas>
+        </div>
+
+      </div>
+
+      <!-- Video Playback & Frame Export Bar -->
+      <div class="video-bar" id="videoControlBar">
+        <div class="video-controls-row">
+          <button class="btn btn-sm" id="btnPlayPause" onclick="toggleVideoPlay()">▶ Play</button>
+          <input type="range" id="videoSeekSlider" min="0" max="100" step="0.1" value="0" style="flex:1;" oninput="seekVideo(this.value)" />
+          <span class="time-readout" id="videoTimeText">00:00 / 00:00</span>
+          <button class="btn btn-sm btn-emerald" id="btnExportVideo" onclick="exportCleanVideo()">
+            💾 Render &amp; Download Clean Video
+          </button>
+        </div>
+
+        <div class="export-progress-wrap" id="videoExportProgress">
+          <div style="display:flex; justify-content:space-between; font-size:12px;">
+            <span id="exportStatusLabel">Rendering frame-by-frame watermark restoration...</span>
+            <strong id="exportPercentLabel">0%</strong>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="exportProgressBar"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- RIGHT SIDEBAR: 4X PIXEL LOUPE, TELEMETRY & EXPORT -->
+    <aside class="right-sidebar">
+
+      <!-- 4X Corner Zoom Loupe -->
+      <div class="panel-section">
+        <div class="section-header">
+          <span>4× Corner Pixel Loupe</span>
+          <span class="badge-tag">Live Inspect</span>
+        </div>
+
+        <div class="loupe-grid">
+          <div class="loupe-box">
+            <span>Original ROI</span>
+            <canvas id="loupeBefore" class="loupe-canvas" width="96" height="96"></canvas>
+          </div>
+          <div class="loupe-box">
+            <span>Restored ROI</span>
+            <canvas id="loupeAfter" class="loupe-canvas" width="96" height="96"></canvas>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:4px;">
+          <span style="font-size:11.5px; color:var(--text-muted);">1px Sub-Pixel Nudge:</span>
+          <div class="nudge-grid">
+            <div></div>
+            <button class="nudge-btn" onclick="nudgeBox(0, 1)" title="Move Up 1px (W)">▲</button>
+            <div></div>
+            <button class="nudge-btn" onclick="nudgeBox(1, 0)" title="Move Left 1px (A)">◀</button>
+            <button class="nudge-btn" onclick="runSmartAutoDetect(true)" title="Re-run Auto-Detect">🎯</button>
+            <button class="nudge-btn" onclick="nudgeBox(-1, 0)" title="Move Right 1px (D)">▶</button>
+            <div></div>
+            <button class="nudge-btn" onclick="nudgeBox(0, -1)" title="Move Down 1px (S)">▼</button>
+            <div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aspect Ratio & Detection Telemetry -->
+      <div class="panel-section">
+        <div class="section-header">
+          <span>Aspect Ratio &amp; Telemetry</span>
+        </div>
+        <div class="stat-list">
+          <div class="stat-row">
+            <span>Dimensions</span>
+            <strong id="statDimensions">—</strong>
+          </div>
+          <div class="stat-row">
+            <span>Aspect Ratio</span>
+            <strong id="statAspectRatio" style="color:#34d399;">—</strong>
+          </div>
+          <div class="stat-row">
+            <span>Resolution Tier</span>
+            <strong id="statTier">—</strong>
+          </div>
+          <div class="stat-row">
+            <span>Detected Box</span>
+            <strong id="statROI">—</strong>
+          </div>
+          <div class="stat-row">
+            <span>Corner Margins</span>
+            <strong id="statMargins">—</strong>
+          </div>
+          <div class="stat-row">
+            <span>Matched Rule</span>
+            <strong id="statConfidence" style="color:#38bdf8;">—</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Batch Queue -->
+      <div class="panel-section" id="batchSection" style="display:none;">
+        <div class="section-header">
+          <span>Batch Image Queue</span>
+          <span class="badge-tag" id="batchCountBadge">0 files</span>
+        </div>
+        <div class="batch-list" id="batchListContainer"></div>
+        <button class="btn btn-sm btn-primary" onclick="processAllBatchImages()">
+          ⚡ Process &amp; Download All
+        </button>
+      </div>
+
+      <!-- Export & Download Panel -->
+      <div class="panel-section">
+        <div class="section-header">
+          <span>Export Clean Media</span>
+        </div>
+
+        <div class="control-group" id="imageFormatGroup">
+          <label class="control-label" for="selExportFormat">Export Format</label>
+          <select id="selExportFormat">
+            <option value="image/png">PNG (Lossless 100% Quality)</option>
+            <option value="image/webp">WebP (98% High Efficiency)</option>
+            <option value="image/jpeg">JPEG (98% Quality, No EXIF)</option>
+          </select>
+        </div>
+
+        <button class="btn btn-emerald" style="width:100%; padding:10px;" onclick="downloadCurrentResult()" id="btnDownloadMain" disabled>
+          ⬇️ Download Clean Media
+        </button>
+
+        <div class="callout-note">
+          <strong>Multi-Ratio Catalog Engine:</strong> Automatically resolves exact Gemini 3.x (<code>0.5K–4K</code>), Gemini 2.5 Flash, and Veo (<code>720p/1080p</code>) watermark coordinates plus resized derivatives.
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <!-- OFFICIAL ASPECT RATIO & WATERMARK COORDINATE CATALOG MODAL -->
+  <div class="modal-backdrop" id="ratioModal" onclick="if(event.target===this) toggleModal('ratioModal', false)">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:17px;">📐 Complete 2026 Gemini &amp; Veo Aspect-Ratio Watermark Catalog</h3>
+        <button class="btn btn-sm" onclick="toggleModal('ratioModal', false)">✕ Close</button>
+      </div>
+      <p style="color:var(--text-muted); font-size:13px;">
+        ClearSpark automatically matches your loaded image or video against all <strong>14 official Gemini 3.x aspect ratios</strong> across 4 resolution tiers (<code>0.5K</code>, <code>1K</code>, <code>2K</code>, <code>4K</code>), <strong>Gemini 2.5 Flash</strong>, <strong>Veo 3.5 video tiers</strong>, and proportional resized derivatives:
+      </p>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th>Ratio</th>
+            <th>0.5K Tier (48px@32)</th>
+            <th>1K Tier (48px@32 / V2)</th>
+            <th>2K Tier (96px@64 / V2)</th>
+            <th>4K Tier (96px@64)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>1:1</strong></td><td>512×512</td><td>1024×1024 (48@32 / 96@64)</td><td>2048×2048 (96@64 / 48@96)</td><td>4096×4096</td></tr>
+          <tr><td><strong>16:9</strong></td><td>688×384</td><td>1376×768 (48@32,73) · 1408×768 (46@32)</td><td>2752×1536 (96@64, 48@89) · 2816×1536 (96@192)</td><td>5504×3072</td></tr>
+          <tr><td><strong>9:16</strong></td><td>384×688</td><td>768×1376 (48@73,32) · 768×1408 (46@32)</td><td>1536×2752 (96@64, 48@89) · 1536×2816 (96@192)</td><td>3072×5504</td></tr>
+          <tr><td><strong>4:3</strong></td><td>600×448</td><td>1200×896 · 1184×864</td><td>2400×1792 (96@64 / 48@96)</td><td>4800×3584</td></tr>
+          <tr><td><strong>3:4</strong></td><td>448×600</td><td>896×1200 · 864×1184</td><td>1792×2400 (96@64 / 48@96)</td><td>3584×4800</td></tr>
+          <tr><td><strong>3:2</strong></td><td>632×424</td><td>1264×848 · 1248×832</td><td>2528×1696</td><td>5056×3392</td></tr>
+          <tr><td><strong>2:3</strong></td><td>424×632</td><td>848×1264 · 832×1248</td><td>1696×2528</td><td>3392×5056</td></tr>
+          <tr><td><strong>5:4 / 4:5</strong></td><td>576×464 / 464×576</td><td>1152×928 / 928×1152</td><td>2304×1856 / 1856×2304</td><td>4608×3712 / 3712×4608</td></tr>
+          <tr><td><strong>21:9</strong></td><td>792×168</td><td>1584×672 · 1536×672</td><td>3168×1344</td><td>6336×2688</td></tr>
+          <tr><td><strong>4:1 / 1:4</strong></td><td>1024×256 / 256×1024</td><td>2048×512 / 512×2048</td><td>4096×1024 / 1024×4096</td><td>8192×2048 / 2048×8192</td></tr>
+          <tr><td><strong>8:1 / 1:8</strong></td><td>1536×192 / 192×1536</td><td>3072×384 / 384×3072</td><td>6144×768 / 768×6144</td><td>12288×1536 / 1536×12288</td></tr>
+          <tr><td><strong>Veo Video</strong></td><td>848×478 (32@24)</td><td>1280×720 / 720×1280 (48@72, 44@29,40, 24@48)</td><td>1920×1080 / 1080×1920 (96@132, 96@64, 48@96)</td><td>3840×2160 (192@264, 96@132)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GITHUB PAGES DEPLOYMENT MODAL -->
+  <div class="modal-backdrop" id="githubModal" onclick="if(event.target===this) toggleModal('githubModal', false)">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:17px;">🚀 Deploy on GitHub Pages in 60 Seconds</h3>
+        <button class="btn btn-sm" onclick="toggleModal('githubModal', false)">✕ Close</button>
+      </div>
+      <p style="color:var(--text-muted); font-size:13px;">
+        This entire application (including the 2026 Multi-Aspect-Ratio Catalog, 96×96 pixel-calibrated signed alpha map, and High-Pass NCC detector) is packed into a single zero-dependency <code>index.html</code> file.
+      </p>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <strong style="font-size:13px; color:var(--accent);">Option A: Web Upload (No Terminal Needed)</strong>
+        <ol style="padding-left:20px; color:var(--text-muted); font-size:13px; display:flex; flex-direction:column; gap:4px;">
+          <li>Create a new public repository on GitHub (e.g. <code>gemini-watermark-remover</code>).</li>
+          <li>Upload this file and make sure it is named <code>index.html</code>.</li>
+          <li>Go to <strong>Settings → Pages</strong>, set Source to <strong>Deploy from a branch</strong> (<code>main</code> / <code>root</code>), and click <strong>Save</strong>.</li>
+        </ol>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <strong style="font-size:13px; color:var(--accent);">Option B: Git CLI Commands</strong>
+        <div class="code-block">git init
+git add index.html
+git commit -m "Deploy multi-ratio local Gemini & Veo watermark remover"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO.git
+git push -u origin main</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">Watermark Removed!</div>
+
+  <!-- APPLICATION SCRIPT -->
+  <script>
+    // =========================================================================
+    // EMBEDDED 96x96 PIXEL-CALIBRATED SIGNED ALPHA MAP
+    // =========================================================================
+    const CALIBRATED_SA96_B64 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAGBwkHAgQEAwIIAwEDBggEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACBggBAwUHCQcJBQYEAgEBBAcHBgkHAggIBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwIH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/vv/AP/69/b84dHRwMnw9u/u9f3/9vTy9ff09/z7/P8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA//8AAP77+/n4AAD+9P4A+/j4+vv7/vz+/v7+/fv9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/gAAAQD///n6/wL/AgMFAwMA/QQD//z7/PsAAf4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD+//4AAP37/wEB/f4B/P3/AQD++/j4+/j+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf78AAACAQEA+f0AAP7+AP//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+    const CALIBRATED_SA96 = new Float32Array(96 * 96);
+
+    (function decodeCalibratedMap() {
+      const bin = atob(CALIBRATED_SA96_B64);
+      for (let i = 0; i < 96 * 96; i++) {
+        let v = bin.charCodeAt(i);
+        if (v > 127) v -= 256;
+        CALIBRATED_SA96[i] = v / 200.0;
+      }
+    })();
+
+    const resampledAlphaCache = new Map();
+    function getCalibratedSignedAlpha(size) {
+      if (resampledAlphaCache.has(size)) return resampledAlphaCache.get(size);
+      const out = new Float32Array(size * size);
+      const scale = 96.0 / size;
+      for (let y = 0; y < size; y++) {
+        const sy0 = y * scale, sy1 = (y + 1) * scale;
+        const iy0 = Math.floor(sy0), iy1 = Math.min(95, Math.ceil(sy1) - 1);
+        for (let x = 0; x < size; x++) {
+          const sx0 = x * scale, sx1 = (x + 1) * scale;
+          const ix0 = Math.floor(sx0), ix1 = Math.min(95, Math.ceil(sx1) - 1);
+          let sum = 0, wSum = 0;
+          for (let iy = iy0; iy <= iy1; iy++) {
+            const wy = Math.min(iy + 1, sy1) - Math.max(iy, sy0);
+            if (wy <= 0) continue;
+            for (let ix = ix0; ix <= ix1; ix++) {
+              const wx = Math.min(ix + 1, sx1) - Math.max(ix, sx0);
+              if (wx <= 0) continue;
+              const w = wx * wy;
+              sum += CALIBRATED_SA96[iy * 96 + ix] * w;
+              wSum += w;
+            }
+          }
+          out[y * size + x] = wSum > 0 ? sum / wSum : 0;
+        }
+      }
+      resampledAlphaCache.set(size, out);
+      return out;
+    }
+
+    // =========================================================================
+    // COMPLETE 2026 GEMINI & VEO MULTI-ASPECT-RATIO CATALOG
+    // =========================================================================
+    const ASPECT_RATIOS = [
+      { label: '1:1 Square',        r: 1.0 / 1.0 },
+      { label: '16:9 Landscape',    r: 16.0 / 9.0 },
+      { label: '9:16 Portrait',     r: 9.0 / 16.0 },
+      { label: '4:3 Landscape',     r: 4.0 / 3.0 },
+      { label: '3:4 Portrait',      r: 3.0 / 4.0 },
+      { label: '3:2 Landscape',     r: 3.0 / 2.0 },
+      { label: '2:3 Portrait',      r: 2.0 / 3.0 },
+      { label: '5:4 Landscape',     r: 5.0 / 4.0 },
+      { label: '4:5 Portrait',      r: 4.0 / 5.0 },
+      { label: '21:9 Ultrawide',    r: 21.0 / 9.0 },
+      { label: '9:21 Tall',         r: 9.0 / 21.0 },
+      { label: '4:1 Wide Banner',   r: 4.0 / 1.0 },
+      { label: '1:4 Tall Strip',    r: 1.0 / 4.0 },
+      { label: '8:1 Leaderboard',   r: 8.0 / 1.0 },
+      { label: '1:8 Skyscraper',    r: 1.0 / 8.0 }
+    ];
+
+    /**
+     * Official discrete (W, H) lookup catalog for Gemini 3.x (0.5K, 1K, 2K, 4K),
+     * Gemini 2.5 Flash (1K), and Veo 3.5 Video (480p, 720p, 1080p, 4K).
+     */
+    const EXACT_DIMENSION_CATALOG = {
+      // --- 0.5K Tier (Gemini 3.x) ---
+      '512x512':   { tier: '0.5K (1:1)',  anchors: [[48,32,32,'0.5K Std'], [24,32,32,'0.5K Compact'], [36,28,28,'V2 Small']] },
+      '688x384':   { tier: '0.5K (16:9)', anchors: [[48,32,32,'0.5K Std'], [24,33,33,'Scaled V2'], [36,28,28,'V2 Small']] },
+      '384x688':   { tier: '0.5K (9:16)', anchors: [[48,32,32,'0.5K Std'], [24,33,33,'Scaled V2'], [36,28,28,'V2 Small']] },
+      '600x448':   { tier: '0.5K (4:3)',  anchors: [[48,32,32,'0.5K Std'], [36,28,28,'V2 Small']] },
+      '448x600':   { tier: '0.5K (3:4)',  anchors: [[48,32,32,'0.5K Std'], [36,28,28,'V2 Small']] },
+      '632x424':   { tier: '0.5K (3:2)',  anchors: [[48,32,32,'0.5K Std'], [36,28,28,'V2 Small']] },
+      '424x632':   { tier: '0.5K (2:3)',  anchors: [[48,32,32,'0.5K Std'], [36,28,28,'V2 Small']] },
+      '576x464':   { tier: '0.5K (5:4)',  anchors: [[48,32,32,'0.5K Std'], [36,28,28,'V2 Small']] },
+      '464x576':   { tier: '0.5K (4:5)',  anchors: [[48,32,32,'0.5K Std'], [36,28,28,'V2 Small']] },
+      '792x168':   { tier: '0.5K (21:9)', anchors: [[48,32,32,'0.5K Std'], [36,24,24,'V2 Small']] },
+      '1024x256':  { tier: '0.5K (4:1)',  anchors: [[48,32,32,'0.5K Std'], [36,28,28,'V2 Small']] },
+      '256x1024':  { tier: '0.5K (1:4)',  anchors: [[48,32,32,'0.5K Std'], [36,28,28,'V2 Small']] },
+      '1536x192':  { tier: '0.5K (8:1)',  anchors: [[48,32,32,'0.5K Std'], [36,24,24,'V2 Small']] },
+      '192x1536':  { tier: '0.5K (1:8)',  anchors: [[48,32,32,'0.5K Std'], [36,24,24,'V2 Small']] },
+
+      // --- 1K Tier (Gemini 3.x & 2.5 Flash) ---
+      '1024x1024': { tier: '1K (1:1)',    anchors: [[48,32,32,'1K Std'], [96,64,64,'1K Legacy/2.5'], [48,96,96,'1K R96'], [36,96,96,'1K V2-36']] },
+      '1376x768':  { tier: '1K (16:9)',   anchors: [[48,32,32,'1K Std'], [48,73,73,'1K V2 R73'], [48,96,96,'1K R96'], [36,96,96,'1K V2-36'], [96,64,64,'1K Legacy']] },
+      '768x1376':  { tier: '1K (9:16)',   anchors: [[48,73,73,'1K V2 R73'], [48,32,32,'1K Std'], [48,96,96,'1K R96'], [36,96,96,'1K V2-36'], [96,64,64,'1K Legacy']] },
+      '1408x768':  { tier: '1K (16:9 46px)', anchors: [[46,32,32,'1408 Fixed 46px'], [48,32,32,'1K Std'], [48,73,73,'1K V2 R73']] },
+      '768x1408':  { tier: '1K (9:16 46px)', anchors: [[46,32,32,'1408 Fixed 46px'], [48,32,32,'1K Std'], [48,73,73,'1K V2 R73']] },
+      '1344x768':  { tier: '1K 2.5 (16:9)',  anchors: [[96,64,64,'2.5 Flash 96px'], [48,32,32,'1K Std']] },
+      '768x1344':  { tier: '1K 2.5 (9:16)',  anchors: [[96,64,64,'2.5 Flash 96px'], [48,32,32,'1K Std']] },
+      '1200x896':  { tier: '1K (4:3)',    anchors: [[48,32,32,'1K Std'], [48,96,96,'1K R96'], [36,96,96,'1K V2-36'], [96,64,64,'1K Legacy']] },
+      '896x1200':  { tier: '1K (3:4)',    anchors: [[48,32,32,'1K Std'], [48,96,96,'1K R96'], [36,96,96,'1K V2-36'], [96,64,64,'1K Legacy']] },
+      '1184x864':  { tier: '1K 2.5 (4:3)',anchors: [[96,64,64,'2.5 Flash 96px'], [48,32,32,'1K Std']] },
+      '864x1184':  { tier: '1K 2.5 (3:4)',anchors: [[96,64,64,'2.5 Flash 96px'], [48,32,32,'1K Std']] },
+      '1264x848':  { tier: '1K (3:2)',    anchors: [[48,32,32,'1K Std'], [48,96,96,'1K R96'], [36,96,96,'1K V2-36'], [96,64,64,'1K Legacy']] },
+      '848x1264':  { tier: '1K (2:3)',    anchors: [[48,32,32,'1K Std'], [48,96,96,'1K R96'], [36,96,96,'1K V2-36'], [96,64,64,'1K Legacy']] },
+      '1248x832':  { tier: '1K 2.5 (3:2)',anchors: [[96,64,64,'2.5 Flash 96px'], [48,32,32,'1K Std']] },
+      '832x1248':  { tier: '1K 2.5 (2:3)',anchors: [[96,64,64,'2.5 Flash 96px'], [48,32,32,'1K Std']] },
+      '1152x928':  { tier: '1K (5:4)',    anchors: [[48,32,32,'1K Std'], [48,96,96,'1K R96'], [36,96,96,'1K V2-36'], [96,64,64,'1K Legacy']] },
+      '928x1152':  { tier: '1K (4:5)',    anchors: [[48,32,32,'1K Std'], [48,96,96,'1K R96'], [36,96,96,'1K V2-36'], [96,64,64,'1K Legacy']] },
+      '1152x896':  { tier: '1K 2.5 (5:4)',anchors: [[96,64,64,'2.5 Flash 96px'], [48,32,32,'1K Std']] },
+      '896x1152':  { tier: '1K 2.5 (4:5)',anchors: [[96,64,64,'2.5 Flash 96px'], [48,32,32,'1K Std']] },
+      '1584x672':  { tier: '1K (21:9)',   anchors: [[48,32,32,'1K Std'], [48,96,96,'1K R96'], [36,96,96,'1K V2-36'], [96,64,64,'1K Legacy']] },
+      '1536x672':  { tier: '1K 2.5 (21:9)',anchors: [[96,64,64,'2.5 Flash 96px'], [48,32,32,'1K Std']] },
+      '2048x512':  { tier: '1K (4:1)',    anchors: [[48,32,32,'1K Std'], [48,96,96,'1K R96'], [96,64,64,'1K Legacy']] },
+      '512x2048':  { tier: '1K (1:4)',    anchors: [[48,32,32,'1K Std'], [48,96,96,'1K R96'], [96,64,64,'1K Legacy']] },
+      '3072x384':  { tier: '1K (8:1)',    anchors: [[48,32,32,'1K Std'], [36,32,32,'1K Small']] },
+      '384x3072':  { tier: '1K (1:8)',    anchors: [[48,32,32,'1K Std'], [36,32,32,'1K Small']] },
+
+      // --- 2K Tier (Gemini 3.x) ---
+      '2048x2048': { tier: '2K (1:1)',    anchors: [[96,64,64,'2K Canonical'], [48,96,96,'2K New R96'], [96,192,192,'2K Deep R192'], [96,132,132,'2K R132']] },
+      '2752x1536': { tier: '2K (16:9)',   anchors: [[96,64,64,'2K Canonical'], [48,89,89,'2K V2 R89'], [96,192,192,'2K Deep R192'], [48,96,96,'2K R96']] },
+      '1536x2752': { tier: '2K (9:16)',   anchors: [[96,64,64,'2K Canonical'], [48,89,89,'2K V2 R89'], [96,192,192,'2K Deep R192'], [48,96,96,'2K R96']] },
+      '2816x1536': { tier: '2K (16:9 Deep)', anchors: [[96,192,192,'2816 Deep R192'], [96,64,64,'2K Canonical'], [48,96,96,'2K R96']] },
+      '1536x2816': { tier: '2K (9:16 Deep)', anchors: [[96,192,192,'2816 Deep R192'], [96,64,64,'2K Canonical'], [48,96,96,'2K R96']] },
+      '2400x1792': { tier: '2K (4:3)',    anchors: [[96,64,64,'2K Canonical'], [48,96,96,'2K New R96'], [96,192,192,'2K Deep R192']] },
+      '1792x2400': { tier: '2K (3:4)',    anchors: [[96,64,64,'2K Canonical'], [48,96,96,'2K New R96'], [96,192,192,'2K Deep R192']] },
+      '2528x1696': { tier: '2K (3:2)',    anchors: [[96,64,64,'2K Canonical'], [48,96,96,'2K R96'], [96,192,192,'2K Deep R192']] },
+      '1696x2528': { tier: '2K (2:3)',    anchors: [[96,64,64,'2K Canonical'], [48,96,96,'2K R96'], [96,192,192,'2K Deep R192']] },
+      '2304x1856': { tier: '2K (5:4)',    anchors: [[96,64,64,'2K Canonical'], [48,96,96,'2K R96'], [96,192,192,'2K Deep R192']] },
+      '1856x2304': { tier: '2K (4:5)',    anchors: [[96,64,64,'2K Canonical'], [48,96,96,'2K R96'], [96,192,192,'2K Deep R192']] },
+      '3168x1344': { tier: '2K (21:9)',   anchors: [[96,64,64,'2K Canonical'], [48,96,96,'2K R96'], [96,192,192,'2K Deep R192']] },
+      '4096x1024': { tier: '2K (4:1)',    anchors: [[96,64,64,'2K Canonical'], [48,96,96,'2K R96']] },
+      '1024x4096': { tier: '2K (1:4)',    anchors: [[96,64,64,'2K Canonical'], [48,96,96,'2K R96']] },
+      '6144x768':  { tier: '2K (8:1)',    anchors: [[96,64,64,'2K Canonical'], [48,96,96,'2K R96']] },
+      '768x6144':  { tier: '2K (1:8)',    anchors: [[96,64,64,'2K Canonical'], [48,96,96,'2K R96']] },
+
+      // --- 4K Tier (Gemini 3.x) ---
+      '4096x4096': { tier: '4K (1:1)',    anchors: [[96,64,64,'4K Canonical'], [96,192,192,'4K R192'], [192,128,128,'4K 2x']] },
+      '5504x3072': { tier: '4K (16:9)',   anchors: [[96,64,64,'4K Canonical'], [96,192,192,'4K R192'], [192,128,128,'4K 2x']] },
+      '3072x5504': { tier: '4K (9:16)',   anchors: [[96,64,64,'4K Canonical'], [96,192,192,'4K R192'], [192,128,128,'4K 2x']] },
+      '4800x3584': { tier: '4K (4:3)',    anchors: [[96,64,64,'4K Canonical'], [96,192,192,'4K R192']] },
+      '3584x4800': { tier: '4K (3:4)',    anchors: [[96,64,64,'4K Canonical'], [96,192,192,'4K R192']] },
+      '5056x3392': { tier: '4K (3:2)',    anchors: [[96,64,64,'4K Canonical'], [96,192,192,'4K R192']] },
+      '3392x5056': { tier: '4K (2:3)',    anchors: [[96,64,64,'4K Canonical'], [96,192,192,'4K R192']] },
+      '4608x3712': { tier: '4K (5:4)',    anchors: [[96,64,64,'4K Canonical'], [96,192,192,'4K R192']] },
+      '3712x4608': { tier: '4K (4:5)',    anchors: [[96,64,64,'4K Canonical'], [96,192,192,'4K R192']] },
+      '6336x2688': { tier: '4K (21:9)',   anchors: [[96,64,64,'4K Canonical'], [96,192,192,'4K R192']] },
+      '8192x2048': { tier: '4K (4:1)',    anchors: [[96,64,64,'4K Canonical']] },
+      '2048x8192': { tier: '4K (1:4)',    anchors: [[96,64,64,'4K Canonical']] },
+      '12288x1536':{ tier: '4K (8:1)',    anchors: [[96,64,64,'4K Canonical']] },
+      '1536x12288':{ tier: '4K (1:8)',    anchors: [[96,64,64,'4K Canonical']] },
+
+      // --- Veo & Gemini 3.5+ Video Resolutions ---
+      '1920x1080': { tier: 'Veo 1080p (16:9)', anchors: [[96,132,132,'Veo 1080p Reloc'], [96,64,64,'Veo 1080p Std'], [48,96,96,'Veo 1080p Half'], [96,192,192,'Veo 1080p R192']] },
+      '1080x1920': { tier: 'Veo 1080p (9:16)', anchors: [[96,132,132,'Veo 1080p Reloc'], [96,64,64,'Veo 1080p Std'], [48,96,96,'Veo 1080p Half'], [96,192,192,'Veo 1080p R192']] },
+      '1280x720':  { tier: 'Veo 720p (16:9)',  anchors: [[48,72,72,'Veo 720p-1 Std'], [44,29,40,'Veo 720p-2 Compact'], [48,96,96,'Veo 720p Reloc'], [24,48,48,'Veo 720p Alt 24px'], [22,37,42,'Veo 720p Stamped']] },
+      '720x1280':  { tier: 'Veo 720p (9:16)',  anchors: [[48,72,72,'Veo 720p-1 Std'], [44,29,40,'Veo 720p-2 Compact'], [44,40,29,'Veo 720p-2 Portrait'], [48,96,96,'Veo 720p Reloc'], [24,48,48,'Veo 720p Alt 24px']] },
+      '848x478':   { tier: 'Veo 480p (16:9)',  anchors: [[32,24,24,'Veo 480p 32px'], [32,48,48,'Veo 480p R48']] },
+      '478x848':   { tier: 'Veo 480p (9:16)',  anchors: [[32,24,24,'Veo 480p 32px'], [32,48,48,'Veo 480p R48']] },
+      '286x512':   { tier: 'Scaled 0.25× (9:16)', anchors: [[23,33,33,'Scaled 9:16 0.25×'], [24,33,33,'Scaled 9:16 24px']] },
+      '512x286':   { tier: 'Scaled 0.25× (16:9)', anchors: [[23,33,33,'Scaled 16:9 0.25×'], [24,33,33,'Scaled 16:9 24px']] }
+    };
+
+    function identifyAspectRatio(W, H) {
+      const ratio = W / H;
+      let best = ASPECT_RATIOS[0];
+      let minDiff = Infinity;
+      for (const ar of ASPECT_RATIOS) {
+        const diff = Math.abs(Math.log(ratio / ar.r));
+        if (diff < minDiff) {
+          minDiff = diff;
+          best = ar;
+        }
+      }
+      return best;
+    }
+
+    /**
+     * Builds the complete candidate pool of [size, marginX, marginY, tag] for any (W, H)
+     * across all 15 aspect ratios, exact catalog dimensions, and resized/scaled projections.
+     */
+    function buildCandidatePoolForDimensions(W, H) {
+      const key = `${W}x${H}`;
+      const ar = identifyAspectRatio(W, H);
+      const maxDim = Math.max(W, H);
+      const minDim = Math.min(W, H);
+      const pool = [];
+      const seen = new Set();
+
+      function addCand(size, mx, my, tag, isExactCatalog = false) {
+        const s = Math.round(size);
+        const x = Math.round(mx);
+        const y = Math.round(my);
+        if (s < 14 || s > minDim * 0.48) return;
+        if (x < 0 || y < 0 || x + s > W - 2 || y + s > H - 2) return;
+        const id = `${s}_${x}_${y}`;
+        if (!seen.has(id)) {
+          seen.add(id);
+          pool.push({ size: s, mx: x, my: y, tag, isExactCatalog });
+        }
+      }
+
+      // 1. Exact Catalog Lookup (if unmodified Gemini 3.x / 2.5 / Veo dimensions)
+      let detectedTierLabel = '';
+      if (EXACT_DIMENSION_CATALOG[key]) {
+        const entry = EXACT_DIMENSION_CATALOG[key];
+        detectedTierLabel = entry.tier;
+        for (const [s, mx, my, tag] of entry.anchors) {
+          addCand(s, mx, my, `${tag} (${ar.label.split(' ')[0]})`, true);
+        }
+      } else {
+        // Infer tier label from long edge
+        if (maxDim <= 800) detectedTierLabel = `~0.5K / Scaled (${ar.label.split(' ')[0]})`;
+        else if (maxDim <= 1600) detectedTierLabel = `~1K / 720p (${ar.label.split(' ')[0]})`;
+        else if (maxDim <= 3200) detectedTierLabel = `~2K / 1080p (${ar.label.split(' ')[0]})`;
+        else detectedTierLabel = `~4K (${ar.label.split(' ')[0]})`;
+      }
+
+      // 2. Proportional Scale Projections across all aspect ratios
+      // Handles resized/downscaled images or custom video resolutions (e.g. 286x512, 572x1024, 1440x2560, 1080x1080)
+      const scaleRefs = [
+        // [refMaxDim, baseSize, baseMargin, label]
+        [1920.0, 96, 132, 'Scaled Veo/3.5 R132'],
+        [2048.0, 96, 132, 'Scaled V2 R132'],
+        [2048.0, 96, 64,  'Scaled 2K R64'],
+        [2048.0, 48, 96,  'Scaled 2K R96'],
+        [2752.0, 96, 64,  'Scaled 2K-Wide R64'],
+        [2752.0, 48, 89,  'Scaled 2K-Wide R89'],
+        [2816.0, 96, 192, 'Scaled 2K Deep R192'],
+        [1376.0, 48, 73,  'Scaled 1K R73'],
+        [1376.0, 48, 32,  'Scaled 1K R32'],
+        [1024.0, 48, 32,  'Scaled 1K-Sq R32'],
+        [1280.0, 48, 72,  'Scaled 720p R72']
+      ];
+      for (const [refMax, bSize, bMargin, label] of scaleRefs) {
+        const sc = maxDim / refMax;
+        if (sc >= 0.18 && sc <= 2.2) {
+          const sProj = Math.round(bSize * sc);
+          const mProj = Math.round(bMargin * sc);
+          addCand(sProj, mProj, mProj, label, false);
+          if (sProj >= 16) {
+            addCand(sProj - 1, mProj, mProj, label, false);
+            addCand(sProj + 1, mProj, mProj, label, false);
+          }
+        }
+      }
+
+      // 3. Universal Tier Anchors (in case image was slightly cropped on top/left)
+      const universalAnchors = [
+        [48, 32, 32, '1K/0.5K Std (48@32)'],
+        [48, 73, 73, '1K 9:16/16:9 (48@73)'],
+        [46, 32, 32, '1K 1408 (46@32)'],
+        [48, 89, 89, '2K 16:9 (48@89)'],
+        [48, 96, 96, '1K/2K Large-M (48@96)'],
+        [48, 72, 72, 'Veo 720p-1 (48@72)'],
+        [44, 29, 40, 'Veo 720p-2 (44@29,40)'],
+        [36, 96, 96, 'V2 Small (36@96)'],
+        [36, 28, 28, 'V2 Small (36@28)'],
+        [96, 64, 64, '2K/4K/Legacy (96@64)'],
+        [96, 132, 132, 'Veo 1080p (96@132)'],
+        [96, 192, 192, '2K Deep (96@192)'],
+        [24, 48, 48, 'Veo Compact (24@48)'],
+        [32, 24, 24, 'Veo 480p (32@24)']
+      ];
+      for (const [s, mx, my, tag] of universalAnchors) {
+        addCand(s, mx, my, tag, false);
+      }
+
+      return { pool, arLabel: ar.label, tierLabel: detectedTierLabel };
+    }
+
+    // =========================================================================
+    // STATE & CONFIGURATION
+    // =========================================================================
+    const state = {
+      mediaMode: 'image',
+      hasMedia: false,
+      fileName: 'gemini_clean',
+      width: 0,
+      height: 0,
+
+      originalImageData: null,
+      processedImageData: null,
+
+      videoEl: null,
+      videoPlaying: false,
+      videoAnimId: null,
+      isExportingVideo: false,
+
+      maskTool: 'corner',
+      boxSize: 48,
+      marginX: 32,
+      marginY: 32,
+      cornerAnchor: 'br',
+
+      customRects: [],
+      userMask: null,
+      brushSize: 28,
+      isDrawing: false,
+      dragStart: null,
+      tempRect: null,
+
+      algorithm: 'signed_hybrid',
+      alphaGain: 1.00,
+      darkGain: 1.00,
+      rimBlend: 80,
+      grainStrength: 65,
+      lastConfidence: 0.0,
+      lastDetectedTag: 'Auto-Catalog',
+      aspectRatioLabel: '—',
+      tierLabel: '—',
+
+      holdOriginal: false,
+      splitCompare: false,
+
+      batchQueue: [],
+      activeBatchIndex: -1
+    };
+
+    const mainCanvas = document.getElementById('mainCanvas');
+    const mainCtx = mainCanvas.getContext('2d', { willReadFrequently: true });
+    const overlayCanvas = document.getElementById('overlayCanvas');
+    const overlayCtx = overlayCanvas.getContext('2d');
+    const loupeBefore = document.getElementById('loupeBefore');
+    const loupeBeforeCtx = loupeBefore.getContext('2d');
+    const loupeAfter = document.getElementById('loupeAfter');
+    const loupeAfterCtx = loupeAfter.getContext('2d');
+
+    const workCanvas = document.createElement('canvas');
+    const workCtx = workCanvas.getContext('2d', { willReadFrequently: true });
+
+    // =========================================================================
+    // UI HELPERS
+    // =========================================================================
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    function toggleModal(id, open) {
+      const el = document.getElementById(id);
+      if (open) el.classList.add('open');
+      else el.classList.remove('open');
+    }
+
+    function switchMediaMode(mode) {
+      state.mediaMode = mode;
+      document.getElementById('tabImageMode').classList.toggle('active', mode === 'image');
+      document.getElementById('tabVideoMode').classList.toggle('active', mode === 'video');
+      document.getElementById('imageFormatGroup').style.display = mode === 'image' ? 'flex' : 'none';
+    }
+
+    function computeCornerBox(W, H) {
+      const size = Math.min(state.boxSize, W, H);
+      let x, y;
+      if (state.cornerAnchor === 'bl') {
+        x = Math.max(0, Math.min(W - size, state.marginX));
+        y = Math.max(0, Math.min(H - size, H - size - state.marginY));
+      } else {
+        x = Math.max(0, Math.min(W - size, W - size - state.marginX));
+        y = Math.max(0, Math.min(H - size, H - size - state.marginY));
+      }
+      return { x: Math.round(x), y: Math.round(y), w: Math.round(size), h: Math.round(size) };
+    }
+
+    // =========================================================================
+    // MULTI-RATIO HIGH-PASS NCC + SEAM VERIFICATION AUTO-DETECTOR
+    // =========================================================================
+    function computeHighPassGray(rgbaData, x0, y0, rw, rh, fullW, blurRadius) {
+      const gray = new Float32Array(rw * rh);
+      for (let y = 0; y < rh; y++) {
+        const rowOff = ((y0 + y) * fullW + x0) * 4;
+        const gRow = y * rw;
+        for (let x = 0; x < rw; x++) {
+          const idx = rowOff + x * 4;
+          gray[gRow + x] = 0.299 * rgbaData[idx] + 0.587 * rgbaData[idx + 1] + 0.114 * rgbaData[idx + 2];
+        }
+      }
+
+      const stride = rw + 1;
+      const integ = new Float64Array((rw + 1) * (rh + 1));
+      for (let y = 1; y <= rh; y++) {
+        let rowSum = 0;
+        for (let x = 1; x <= rw; x++) {
+          rowSum += gray[(y - 1) * rw + (x - 1)];
+          integ[y * stride + x] = integ[(y - 1) * stride + x] + rowSum;
+        }
+      }
+
+      const hp = new Float32Array(rw * rh);
+      const r = Math.max(1, blurRadius);
+      for (let y = 0; y < rh; y++) {
+        const y1 = Math.max(0, y - r), y2 = Math.min(rh, y + r + 1);
+        for (let x = 0; x < rw; x++) {
+          const x1 = Math.max(0, x - r), x2 = Math.min(rw, x + r + 1);
+          const count = (x2 - x1) * (y2 - y1);
+          const sum = integ[y2 * stride + x2] - integ[y1 * stride + x2] - integ[y2 * stride + x1] + integ[y1 * stride + x1];
+          hp[y * rw + x] = gray[y * rw + x] - (sum / count);
+        }
+      }
+      return hp;
+    }
+
+    const hpTemplateCache = new Map();
+    function computeHighPassTemplate(size) {
+      if (hpTemplateCache.has(size)) return hpTemplateCache.get(size);
+      const raw = getCalibratedSignedAlpha(size);
+      const r = Math.max(1, Math.round(size * 3.0 / 24.0));
+      const hp = new Float32Array(size * size);
+      let mean = 0;
+      for (let y = 0; y < size; y++) {
+        const y1 = Math.max(0, y - r), y2 = Math.min(size - 1, y + r);
+        for (let x = 0; x < size; x++) {
+          const x1 = Math.max(0, x - r), x2 = Math.min(size - 1, x + r);
+          let sum = 0, cnt = 0;
+          for (let yy = y1; yy <= y2; yy++) {
+            for (let xx = x1; xx <= x2; xx++) {
+              sum += raw[yy * size + xx];
+              cnt++;
+            }
+          }
+          const v = raw[y * size + x] - (sum / cnt);
+          hp[y * size + x] = v;
+          mean += v;
+        }
+      }
+      mean /= (size * size);
+      let variance = 0;
+      for (let i = 0; i < size * size; i++) {
+        hp[i] -= mean;
+        variance += hp[i] * hp[i];
+      }
+      const res = { hp, std: Math.sqrt(variance) || 1e-5 };
+      hpTemplateCache.set(size, res);
+      return res;
+    }
+
+    /**
+     * Runs the full Multi-Aspect-Ratio Catalog + High-Pass NCC Auto-Detector
+     */
+    function runSmartAutoDetect(showNotification = false) {
+      if (!state.hasMedia || !state.originalImageData) return;
+      const W = state.width;
+      const H = state.height;
+      const rgba = state.originalImageData.data;
+
+      const { pool, arLabel, tierLabel } = buildCandidatePoolForDimensions(W, H);
+      state.aspectRatioLabel = arLabel;
+      state.tierLabel = tierLabel;
+
+      // Determine bounding box of all candidates in bottom-right corner
+      let maxSearchX = 240, maxSearchY = 240;
+      for (const c of pool) {
+        maxSearchX = Math.max(maxSearchX, c.size + c.mx + 24);
+        maxSearchY = Math.max(maxSearchY, c.size + c.my + 24);
+      }
+      const quadW = Math.min(W, maxSearchX);
+      const quadH = Math.min(H, maxSearchY);
+      const qx0 = W - quadW;
+      const qy0 = H - quadH;
+
+      // Cache high-pass quadrants by blurRadius
+      const hpQuadCache = new Map();
+      function getHpQuad(blurR) {
+        if (!hpQuadCache.has(blurR)) {
+          hpQuadCache.set(blurR, computeHighPassGray(rgba, qx0, qy0, quadW, quadH, W, blurR));
+        }
+        return hpQuadCache.get(blurR);
+      }
+
+      let bestScore = -1;
+      let bestMatch = null;
+
+      for (const cand of pool) {
+        const s = cand.size;
+        const blurR = Math.max(1, Math.round(s * 3.0 / 24.0));
+        const hpQuad = getHpQuad(blurR);
+        const { hp: tHp, std: tStd } = computeHighPassTemplate(s);
+
+        // Exact catalog entries use a tight ±6px refinement window; scaled entries use ±10px
+        const searchRad = cand.isExactCatalog ? 6 : 10;
+        const step = (s >= 64 && !cand.isExactCatalog) ? 2 : 1;
+
+        for (let dmy = -searchRad; dmy <= searchRad; dmy += step) {
+          const my = cand.my + dmy;
+          const ly = quadH - s - my;
+          if (ly < 0 || ly + s > quadH) continue;
+
+          for (let dmx = -searchRad; dmx <= searchRad; dmx += step) {
+            const mx = cand.mx + dmx;
+            const lx = quadW - s - mx;
+            if (lx < 0 || lx + s > quadW) continue;
+
+            let num = 0, iVar = 0;
+            for (let y = 0; y < s; y++) {
+              const qRow = (ly + y) * quadW + lx;
+              const tRow = y * s;
+              for (let x = 0; x < s; x++) {
+                const iv = hpQuad[qRow + x];
+                num += iv * tHp[tRow + x];
+                iVar += iv * iv;
+              }
+            }
+            const rawNcc = num / ((Math.sqrt(iVar) || 1e-5) * tStd);
+            // Slight prior bonus (+0.035) for exact official catalog coordinates so canonical anchors win ties
+            const priorBonus = (cand.isExactCatalog && dmx === 0 && dmy === 0) ? 0.035 : 0.0;
+            const totalScore = rawNcc + priorBonus;
+
+            if (totalScore > bestScore) {
+              bestScore = totalScore;
+              bestMatch = { size: s, mx, my, tag: cand.tag, rawNcc };
+            }
+          }
+        }
+      }
+
+      // 1px refinement around bestMatch
+      if (bestMatch) {
+        const s = bestMatch.size;
+        const blurR = Math.max(1, Math.round(s * 3.0 / 24.0));
+        const hpQuad = getHpQuad(blurR);
+        const { hp: tHp, std: tStd } = computeHighPassTemplate(s);
+        const baseMx = bestMatch.mx, baseMy = bestMatch.my;
+
+        for (let dmy = -1; dmy <= 1; dmy++) {
+          for (let dmx = -1; dmx <= 1; dmx++) {
+            const mx = baseMx + dmx, my = baseMy + dmy;
+            const lx = quadW - s - mx, ly = quadH - s - my;
+            if (lx < 0 || ly < 0 || lx + s > quadW || ly + s > quadH) continue;
+            let num = 0, iVar = 0;
+            for (let y = 0; y < s; y++) {
+              const qRow = (ly + y) * quadW + lx;
+              const tRow = y * s;
+              for (let x = 0; x < s; x++) {
+                const iv = hpQuad[qRow + x];
+                num += iv * tHp[tRow + x];
+                iVar += iv * iv;
+              }
+            }
+            const rawNcc = num / ((Math.sqrt(iVar) || 1e-5) * tStd);
+            if (rawNcc > bestMatch.rawNcc) {
+              bestMatch = { size: s, mx, my, tag: bestMatch.tag, rawNcc };
+            }
+          }
+        }
+      }
+
+      if (bestMatch && bestMatch.rawNcc > 0.16) {
+        state.boxSize = bestMatch.size;
+        state.marginX = bestMatch.mx;
+        state.marginY = bestMatch.my;
+        state.cornerAnchor = 'br';
+        state.lastConfidence = bestMatch.rawNcc;
+        state.lastDetectedTag = bestMatch.tag;
+      } else if (pool.length > 0) {
+        // Use primary catalog prediction for this dimension/ratio
+        state.boxSize = pool[0].size;
+        state.marginX = pool[0].mx;
+        state.marginY = pool[0].my;
+        state.lastConfidence = bestMatch ? Math.max(0.12, bestMatch.rawNcc) : 0.20;
+        state.lastDetectedTag = pool[0].tag;
+      }
+
+      document.getElementById('selRatioOverride').value = 'auto_catalog';
+      syncSlidersFromState();
+      processCurrentMedia();
+
+      if (showNotification) {
+        showToast(`${state.aspectRatioLabel}: Locked ${state.boxSize}×${state.boxSize}px @ margin (${state.marginX},${state.marginY}) • ${(state.lastConfidence * 100).toFixed(1)}%`);
+      }
+    }
+
+    function applyCatalogProfileSelect(val) {
+      if (val === 'auto_catalog') {
+        runSmartAutoDetect(true);
+        return;
+      }
+      const W = state.width || 1024;
+      const H = state.height || 1024;
+      const maxDim = Math.max(W, H);
+
+      const map = {
+        tier_1k_std:       { s: 48, mx: 32,  my: 32,  tag: '1K Std (48@32)' },
+        tier_1k_v2_916:    { s: 48, mx: 73,  my: 73,  tag: '1K V2 (48@73)' },
+        tier_1k_1408:      { s: 46, mx: 32,  my: 32,  tag: '1408 Fixed (46@32)' },
+        tier_1k_r96:       { s: 48, mx: 96,  my: 96,  tag: '1K Large-M (48@96)' },
+        tier_1k_v2_36:     { s: 36, mx: 96,  my: 96,  tag: '1K V2-Small (36@96)' },
+        tier_2k_std:       { s: 96, mx: 64,  my: 64,  tag: '2K/4K Std (96@64)' },
+        tier_2k_r96:       { s: 48, mx: 96,  my: 96,  tag: '2K New (48@96)' },
+        tier_2k_2752_r89:  { s: 48, mx: 89,  my: 89,  tag: '2K 2752 (48@89)' },
+        tier_2k_2816_r192: { s: 96, mx: 192, my: 192, tag: '2K Deep (96@192)' },
+        veo_1080p_reloc:   { s: 96, mx: 132, my: 132, tag: 'Veo 1080p (96@132)' },
+        veo_1080p_std:     { s: 96, mx: 64,  my: 64,  tag: 'Veo 1080p (96@64)' },
+        veo_720p_t1:       { s: 48, mx: 72,  my: 72,  tag: 'Veo 720p-1 (48@72)' },
+        veo_720p_t2:       { s: 44, mx: 29,  my: 40,  tag: 'Veo 720p-2 (44@29,40)' },
+        veo_720p_reloc:    { s: 48, mx: 96,  my: 96,  tag: 'Veo 720p Reloc (48@96)' },
+        veo_sub720:        { s: 32, mx: 24,  my: 24,  tag: 'Veo 480p (32@24)' },
+        scaled_proportional: {
+          s: Math.max(16, Math.round(96 * (maxDim / 2048.0))),
+          mx: Math.max(12, Math.round(132 * (maxDim / 2048.0))),
+          my: Math.max(12, Math.round(132 * (maxDim / 2048.0))),
+          tag: 'Proportional Scaled'
+        }
+      };
+
+      if (map[val]) {
+        state.boxSize = map[val].s;
+        state.marginX = map[val].mx;
+        state.marginY = map[val].my;
+        state.lastDetectedTag = map[val].tag;
+        syncSlidersFromState();
+        if (state.hasMedia) processCurrentMedia();
+      }
+    }
+
+    // =========================================================================
+    // CORE RESTORATION ENGINES (SIGNED REVERSE-ALPHA + PERIMETER BAND CLEANUP)
+    // =========================================================================
+    function restoreFrameBuffer(imgData, W, H) {
+      const data = imgData.data;
+      const algo = state.algorithm;
+      const box = computeCornerBox(W, H);
+
+      if (state.maskTool === 'corner' || state.customRects.length === 0) {
+        if (algo === 'signed_hybrid' || algo === 'signed_pure') {
+          applySignedReverseAlphaBox(data, W, H, box, algo === 'signed_hybrid');
+        } else {
+          const mask = createBoxMask(W, H, box);
+          runInpaintEngine(data, W, H, mask, box, algo);
+        }
+      }
+
+      for (const r of state.customRects) {
+        const clampedRect = {
+          x: Math.max(0, Math.round(r.x)),
+          y: Math.max(0, Math.round(r.y)),
+          w: Math.min(W - Math.round(r.x), Math.round(r.w)),
+          h: Math.min(H - Math.round(r.y), Math.round(r.h))
+        };
+        if (clampedRect.w > 2 && clampedRect.h > 2) {
+          const mask = createBoxMask(W, H, clampedRect);
+          const rectAlgo = (algo === 'signed_hybrid' || algo === 'signed_pure') ? 'fmm_telea' : algo;
+          runInpaintEngine(data, W, H, mask, clampedRect, rectAlgo);
+        }
+      }
+
+      if (state.userMask) {
+        const bounds = getMaskBounds(state.userMask, W, H);
+        if (bounds) {
+          const brushAlgo = (algo === 'signed_hybrid' || algo === 'signed_pure') ? 'fmm_telea' : algo;
+          runInpaintEngine(data, W, H, state.userMask, bounds, brushAlgo);
+        }
+      }
+    }
+
+    function applySignedReverseAlphaBox(data, W, H, box, withPerimeterCleanup) {
+      const { x: bx, y: by, w: size } = box;
+      const saMap = getCalibratedSignedAlpha(size);
+      const kPos = state.alphaGain;
+      const kNeg = state.darkGain;
+
+      const roi = new Float32Array(size * size * 3);
+      for (let ly = 0; ly < size; ly++) {
+        const py = by + ly;
+        for (let lx = 0; lx < size; lx++) {
+          const px = bx + lx;
+          const gIdx = (py * W + px) * 4;
+          const lIdx = (ly * size + lx) * 3;
+          roi[lIdx] = data[gIdx];
+          roi[lIdx + 1] = data[gIdx + 1];
+          roi[lIdx + 2] = data[gIdx + 2];
+        }
+      }
+
+      for (let i = 0; i < size * size; i++) {
+        const rawA = saMap[i];
+        const i3 = i * 3;
+        if (rawA > 0.002) {
+          const a = Math.min(0.88, rawA * kPos);
+          const inv = 1.0 / (1.0 - a);
+          roi[i3] = Math.max(0, Math.min(255, (roi[i3] - a * 255.0) * inv));
+          roi[i3 + 1] = Math.max(0, Math.min(255, (roi[i3 + 1] - a * 255.0) * inv));
+          roi[i3 + 2] = Math.max(0, Math.min(255, (roi[i3 + 2] - a * 255.0) * inv));
+        } else if (rawA < -0.002) {
+          const aDark = Math.min(0.85, (-rawA) * kNeg);
+          const inv = 1.0 / (1.0 - aDark);
+          roi[i3] = Math.max(0, Math.min(255, roi[i3] * inv));
+          roi[i3 + 1] = Math.max(0, Math.min(255, roi[i3 + 1] * inv));
+          roi[i3 + 2] = Math.max(0, Math.min(255, roi[i3 + 2] * inv));
+        }
+      }
+
+      if (withPerimeterCleanup && state.rimBlend > 0) {
+        const bandMask = new Uint8Array(size * size);
+        for (let y = 1; y < size - 1; y++) {
+          for (let x = 1; x < size - 1; x++) {
+            const idx = y * size + x;
+            const a = saMap[idx];
+            const gx = saMap[idx + 1] - saMap[idx - 1];
+            const gy = saMap[idx + size] - saMap[idx - size];
+            const grad = Math.sqrt(gx * gx + gy * gy);
+            if (grad > 0.032 || a < -0.012 || a > 0.30) {
+              bandMask[idx] = 1;
+            }
+          }
+        }
+
+        const finalBand = new Uint8Array(bandMask);
+        if (size >= 40) {
+          for (let y = 1; y < size - 1; y++) {
+            for (let x = 1; x < size - 1; x++) {
+              const idx = y * size + x;
+              if (bandMask[idx - 1] || bandMask[idx + 1] || bandMask[idx - size] || bandMask[idx + size]) {
+                finalBand[idx] = 1;
+              }
+            }
+          }
+        }
+
+        let varSum = 0, varCnt = 0;
+        for (let y = 1; y < size - 1; y++) {
+          for (let x = 1; x < size - 1; x++) {
+            const idx = y * size + x;
+            if (Math.abs(saMap[idx]) < 0.002) {
+              const d = roi[idx * 3 + 1] - 0.25 * (
+                roi[(idx - 1) * 3 + 1] + roi[(idx + 1) * 3 + 1] +
+                roi[(idx - size) * 3 + 1] + roi[(idx + size) * 3 + 1]
+              );
+              varSum += d * d;
+              varCnt++;
+            }
+          }
+        }
+        const bgStd = varCnt > 10 ? Math.sqrt(varSum / varCnt) : 2.5;
+
+        const inpainted = new Float32Array(roi);
+        const fmmRadius = Math.max(2, Math.min(5, Math.round(size / 20)));
+        inpaintTeleaFMM(inpainted, finalBand, size, size, fmmRadius);
+
+        const blendRatio = state.rimBlend / 100.0;
+        const grainScale = (state.grainStrength / 100.0) * bgStd * 1.15;
+
+        for (let y = 1; y < size - 1; y++) {
+          for (let x = 1; x < size - 1; x++) {
+            const idx = y * size + x;
+            if (!finalBand[idx]) continue;
+            let nCnt = finalBand[idx] + finalBand[idx - 1] + finalBand[idx + 1] + finalBand[idx - size] + finalBand[idx + size];
+            const w = (nCnt / 5.0) * blendRatio;
+            const i3 = idx * 3;
+            const noise = grainScale > 0 ? ((Math.sin((bx + x) * 12.9898 + (by + y) * 78.233) * 43758.5453 % 1) - 0.5) * 2.0 * grainScale : 0;
+            for (let c = 0; c < 3; c++) {
+              roi[i3 + c] = Math.max(0, Math.min(255, roi[i3 + c] * (1.0 - w) + (inpainted[i3 + c] + noise) * w));
+            }
+          }
+        }
+      }
+
+      for (let ly = 0; ly < size; ly++) {
+        const py = by + ly;
+        for (let lx = 0; lx < size; lx++) {
+          const px = bx + lx;
+          const gIdx = (py * W + px) * 4;
+          const lIdx = (ly * size + lx) * 3;
+          data[gIdx] = Math.round(roi[lIdx]);
+          data[gIdx + 1] = Math.round(roi[lIdx + 1]);
+          data[gIdx + 2] = Math.round(roi[lIdx + 2]);
+        }
+      }
+    }
+
+    function createBoxMask(W, H, box) {
+      const mask = new Uint8Array(W * H);
+      const x1 = Math.max(0, box.x), y1 = Math.max(0, box.y);
+      const x2 = Math.min(W, box.x + box.w), y2 = Math.min(H, box.y + box.h);
+      for (let y = y1; y < y2; y++) {
+        const row = y * W;
+        for (let x = x1; x < x2; x++) mask[row + x] = 1;
+      }
+      return mask;
+    }
+
+    function getMaskBounds(mask, W, H) {
+      let minX = W, minY = H, maxX = -1, maxY = -1;
+      for (let y = 0; y < H; y++) {
+        const row = y * W;
+        for (let x = 0; x < W; x++) {
+          if (mask[row + x]) {
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+      if (maxX < minX) return null;
+      return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+    }
+
+    function runInpaintEngine(data, W, H, mask, bounds, algo) {
+      const pad = 6;
+      const rx = Math.max(0, bounds.x - pad);
+      const ry = Math.max(0, bounds.y - pad);
+      const rw = Math.min(W - rx, bounds.w + pad * 2);
+      const rh = Math.min(H - ry, bounds.h + pad * 2);
+
+      const subData = new Float32Array(rw * rh * 3);
+      const subMask = new Uint8Array(rw * rh);
+
+      for (let y = 0; y < rh; y++) {
+        for (let x = 0; x < rw; x++) {
+          const gIdx = (ry + y) * W + (rx + x);
+          const sIdx = y * rw + x;
+          subMask[sIdx] = mask[gIdx];
+          subData[sIdx * 3] = data[gIdx * 4];
+          subData[sIdx * 3 + 1] = data[gIdx * 4 + 1];
+          subData[sIdx * 3 + 2] = data[gIdx * 4 + 2];
+        }
+      }
+
+      if (algo === 'fmm_telea') {
+        inpaintTeleaFMM(subData, subMask, rw, rh, 5);
+      } else if (algo === 'patch_clone') {
+        inpaintPatchSynthesis(subData, subMask, rw, rh);
+      } else {
+        inpaintHarmonicPDE(subData, subMask, rw, rh, 6);
+      }
+
+      const grainAmt = (state.grainStrength / 100) * 5.0;
+      for (let y = 0; y < rh; y++) {
+        for (let x = 0; x < rw; x++) {
+          const sIdx = y * rw + x;
+          if (!mask[(ry + y) * W + (rx + x)]) continue;
+          const gIdx = ((ry + y) * W + (rx + x)) * 4;
+          const noise = grainAmt > 0 ? ((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453 % 1) - 0.5) * grainAmt : 0;
+          data[gIdx] = Math.max(0, Math.min(255, Math.round(subData[sIdx * 3] + noise)));
+          data[gIdx + 1] = Math.max(0, Math.min(255, Math.round(subData[sIdx * 3 + 1] + noise)));
+          data[gIdx + 2] = Math.max(0, Math.min(255, Math.round(subData[sIdx * 3 + 2] + noise)));
+        }
+      }
+    }
+
+    function inpaintTeleaFMM(subData, subMask, rw, rh, radius) {
+      const stateMap = new Uint8Array(rw * rh);
+      let remaining = 0;
+      for (let i = 0; i < rw * rh; i++) {
+        if (subMask[i]) {
+          stateMap[i] = 2;
+          remaining++;
+        }
+      }
+      const rSearch = Math.max(2, Math.min(12, radius));
+      let maxIterations = Math.max(rw, rh) * 2;
+
+      while (remaining > 0 && maxIterations-- > 0) {
+        const boundary = [];
+        for (let y = 1; y < rh - 1; y++) {
+          for (let x = 1; x < rw - 1; x++) {
+            const idx = y * rw + x;
+            if (stateMap[idx] === 2) {
+              if (stateMap[idx - 1] === 0 || stateMap[idx + 1] === 0 || stateMap[idx - rw] === 0 || stateMap[idx + rw] === 0) {
+                boundary.push(idx);
+              }
+            }
+          }
+        }
+        if (boundary.length === 0) break;
+
+        for (let b = 0; b < boundary.length; b++) {
+          const idx = boundary[b];
+          const bx = idx % rw;
+          const by = (idx / rw) | 0;
+          let sumR = 0, sumG = 0, sumB = 0, sumW = 0;
+          for (let dy = -rSearch; dy <= rSearch; dy++) {
+            const ny = by + dy;
+            if (ny < 0 || ny >= rh) continue;
+            for (let dx = -rSearch; dx <= rSearch; dx++) {
+              const nx = bx + dx;
+              if (nx < 0 || nx >= rw) continue;
+              const nIdx = ny * rw + nx;
+              if (stateMap[nIdx] === 0) {
+                const dist2 = dx * dx + dy * dy;
+                if (dist2 === 0 || dist2 > rSearch * rSearch) continue;
+                const w = 1.0 / (dist2 * Math.sqrt(dist2));
+                sumR += subData[nIdx * 3] * w;
+                sumG += subData[nIdx * 3 + 1] * w;
+                sumB += subData[nIdx * 3 + 2] * w;
+                sumW += w;
+              }
+            }
+          }
+          if (sumW > 0) {
+            subData[idx * 3] = sumR / sumW;
+            subData[idx * 3 + 1] = sumG / sumW;
+            subData[idx * 3 + 2] = sumB / sumW;
+          }
+        }
+        for (let b = 0; b < boundary.length; b++) {
+          stateMap[boundary[b]] = 0;
+          remaining--;
+        }
+      }
+    }
+
+    function inpaintHarmonicPDE(subData, subMask, rw, rh, radius) {
+      inpaintTeleaFMM(subData, subMask, rw, rh, radius);
+      const iterations = Math.max(15, radius * 4);
+      const omega = 1.65;
+      for (let iter = 0; iter < iterations; iter++) {
+        for (let y = 1; y < rh - 1; y++) {
+          for (let x = 1; x < rw - 1; x++) {
+            const idx = y * rw + x;
+            if (!subMask[idx]) continue;
+            const i3 = idx * 3;
+            for (let c = 0; c < 3; c++) {
+              const avg = 0.20 * (
+                subData[(idx - 1) * 3 + c] + subData[(idx + 1) * 3 + c] +
+                subData[(idx - rw) * 3 + c] + subData[(idx + rw) * 3 + c]
+              ) + 0.05 * (
+                subData[(idx - rw - 1) * 3 + c] + subData[(idx - rw + 1) * 3 + c] +
+                subData[(idx + rw - 1) * 3 + c] + subData[(idx + rw + 1) * 3 + c]
+              );
+              subData[i3 + c] += omega * (avg - subData[i3 + c]);
+            }
+          }
+        }
+      }
+    }
+
+    function inpaintPatchSynthesis(subData, subMask, rw, rh) {
+      const seedMask = new Uint8Array(subMask);
+      inpaintTeleaFMM(subData, seedMask, rw, rh, 5);
+      const patchR = 2;
+      const candidates = [];
+      for (let y = patchR; y < rh - patchR; y += 2) {
+        for (let x = patchR; x < rw - patchR; x += 2) {
+          if (!subMask[y * rw + x]) candidates.push({ x, y });
+        }
+      }
+      if (candidates.length === 0) return;
+      const out = new Float32Array(subData);
+      for (let y = patchR; y < rh - patchR; y++) {
+        for (let x = patchR; x < rw - patchR; x++) {
+          const idx = y * rw + x;
+          if (!subMask[idx]) continue;
+          let bestCost = Infinity, bestCand = candidates[0];
+          for (let k = 0; k < candidates.length; k++) {
+            const cx = candidates[k].x, cy = candidates[k].y;
+            let cost = 0;
+            for (let py = -patchR; py <= patchR; py += 2) {
+              for (let px = -patchR; px <= patchR; px += 2) {
+                const tIdx = ((y + py) * rw + (x + px)) * 3;
+                const sIdx = ((cy + py) * rw + (cx + px)) * 3;
+                const dr = subData[tIdx] - subData[sIdx];
+                const dg = subData[tIdx + 1] - subData[sIdx + 1];
+                const db = subData[tIdx + 2] - subData[sIdx + 2];
+                cost += dr * dr + dg * dg + db * db;
+              }
+            }
+            if (cost < bestCost) {
+              bestCost = cost;
+              bestCand = candidates[k];
+            }
+          }
+          const srcIdx = (bestCand.y * rw + bestCand.x) * 3;
+          out[idx * 3] = subData[idx * 3] * 0.35 + subData[srcIdx] * 0.65;
+          out[idx * 3 + 1] = subData[idx * 3 + 1] * 0.35 + subData[srcIdx + 1] * 0.65;
+          out[idx * 3 + 2] = subData[idx * 3 + 2] * 0.35 + subData[srcIdx + 2] * 0.65;
+        }
+      }
+      subData.set(out);
+    }
+
+    // =========================================================================
+    // SLIDER & UI CONTROLS
+    // =========================================================================
+    function syncSlidersFromState() {
+      document.getElementById('rngBoxSize').value = state.boxSize;
+      document.getElementById('valBoxSize').textContent = `${state.boxSize} × ${state.boxSize} px`;
+      document.getElementById('rngMarginX').value = state.marginX;
+      document.getElementById('valMarginX').textContent = `${state.marginX} px`;
+      document.getElementById('rngMarginY').value = state.marginY;
+      document.getElementById('valMarginY').textContent = `${state.marginY} px`;
+    }
+
+    function updateCornerParams() {
+      state.boxSize = parseInt(document.getElementById('rngBoxSize').value, 10);
+      state.marginX = parseInt(document.getElementById('rngMarginX').value, 10);
+      state.marginY = parseInt(document.getElementById('rngMarginY').value, 10);
+      syncSlidersFromState();
+      if (state.hasMedia) processCurrentMedia();
+    }
+
+    function nudgeBox(dmx, dmy) {
+      state.marginX = Math.max(0, state.marginX + dmx);
+      state.marginY = Math.max(0, state.marginY + dmy);
+      syncSlidersFromState();
+      if (state.hasMedia) processCurrentMedia();
+    }
+
+    function setMaskTool(tool) {
+      state.maskTool = tool;
+      document.getElementById('toolCorner').classList.toggle('active', tool === 'corner');
+      document.getElementById('toolRect').classList.toggle('active', tool === 'rect');
+      document.getElementById('toolBrush').classList.toggle('active', tool === 'brush');
+      document.getElementById('brushSizeGroup').style.display = tool === 'brush' ? 'flex' : 'none';
+      renderViewport();
+    }
+
+    function updateBrushSize(val) {
+      state.brushSize = parseInt(val, 10);
+      document.getElementById('valBrushSize').textContent = `${state.brushSize} px`;
+    }
+
+    function clearCustomMasks() {
+      state.customRects = [];
+      if (state.userMask) state.userMask.fill(0);
+      if (state.hasMedia) processCurrentMedia();
+      showToast('Cleared custom rectangles and brush strokes');
+    }
+
+    function onAlgorithmChange() {
+      state.algorithm = document.getElementById('selAlgorithm').value;
+      const isAlpha = state.algorithm === 'signed_hybrid' || state.algorithm === 'signed_pure';
+      document.getElementById('alphaControlsGroup').style.display = isAlpha ? 'flex' : 'none';
+      if (state.hasMedia) processCurrentMedia();
+    }
+
+    function updateAlgorithmParams() {
+      state.alphaGain = parseFloat(document.getElementById('rngAlphaGain').value);
+      state.darkGain = parseFloat(document.getElementById('rngDarkGain').value);
+      state.rimBlend = parseInt(document.getElementById('rngRimBlend').value, 10);
+      state.grainStrength = parseInt(document.getElementById('rngGrain').value, 10);
+
+      document.getElementById('valAlphaGain').textContent = `${state.alphaGain.toFixed(2)}×`;
+      document.getElementById('valDarkGain').textContent = `${state.darkGain.toFixed(2)}×`;
+      document.getElementById('valRimBlend').textContent = `${state.rimBlend}%`;
+      document.getElementById('valGrain').textContent = `${state.grainStrength}%`;
+
+      if (state.hasMedia) processCurrentMedia();
+    }
+
+    // =========================================================================
+    // VIEWPORT RENDERING & 4X LOUPE
+    // =========================================================================
+    function processCurrentMedia() {
+      if (!state.hasMedia) return;
+
+      if (state.mediaMode === 'image' && state.originalImageData) {
+        const copy = new ImageData(
+          new Uint8ClampedArray(state.originalImageData.data),
+          state.width,
+          state.height
+        );
+        restoreFrameBuffer(copy, state.width, state.height);
+        state.processedImageData = copy;
+
+        if (state.activeBatchIndex >= 0 && state.batchQueue[state.activeBatchIndex]) {
+          state.batchQueue[state.activeBatchIndex].procData = copy;
+        }
+        renderViewport();
+      } else if (state.mediaMode === 'video' && state.videoEl) {
+        renderCurrentVideoFrame();
+      }
+      updateTelemetryReadout();
+    }
+
+    function resetToOriginal() {
+      if (!state.hasMedia || !state.originalImageData) return;
+      state.processedImageData = new ImageData(
+        new Uint8ClampedArray(state.originalImageData.data),
+        state.width,
+        state.height
+      );
+      renderViewport();
+      showToast('Reverted to original unmodified media');
+    }
+
+    function setHoldCompare(hold) {
+      state.holdOriginal = hold;
+      renderViewport();
+    }
+
+    function toggleSplitCompare() {
+      state.splitCompare = document.getElementById('chkSplitView').checked;
+      document.getElementById('splitSliderWrap').style.display = state.splitCompare ? 'flex' : 'none';
+      renderViewport();
+    }
+
+    function renderViewport() {
+      if (!state.hasMedia || !state.originalImageData || !state.processedImageData) return;
+
+      const W = state.width;
+      const H = state.height;
+
+      if (state.holdOriginal) {
+        mainCtx.putImageData(state.originalImageData, 0, 0);
+      } else if (state.splitCompare) {
+        const pct = parseInt(document.getElementById('rngSplitPos').value, 10) / 100;
+        const splitX = Math.round(W * pct);
+        mainCtx.putImageData(state.processedImageData, 0, 0);
+        mainCtx.putImageData(state.originalImageData, 0, 0, 0, 0, splitX, H);
+      } else {
+        mainCtx.putImageData(state.processedImageData, 0, 0);
+      }
+
+      overlayCtx.clearRect(0, 0, W, H);
+      const showGuide = document.getElementById('chkShowMask').checked;
+
+      if (showGuide && !state.holdOriginal) {
+        const box = computeCornerBox(W, H);
+        overlayCtx.save();
+        overlayCtx.strokeStyle = '#38bdf8';
+        overlayCtx.lineWidth = Math.max(1.5, Math.round(Math.max(W, H) / 400));
+        overlayCtx.setLineDash([5, 3]);
+        overlayCtx.strokeRect(box.x, box.y, box.w, box.h);
+
+        overlayCtx.strokeStyle = '#f59e0b';
+        for (const r of state.customRects) {
+          overlayCtx.strokeRect(r.x, r.y, r.w, r.h);
+        }
+        if (state.tempRect) {
+          overlayCtx.strokeRect(state.tempRect.x, state.tempRect.y, state.tempRect.w, state.tempRect.h);
+        }
+        overlayCtx.restore();
+      }
+
+      if (state.splitCompare) {
+        const pct = parseInt(document.getElementById('rngSplitPos').value, 10) / 100;
+        const splitX = Math.round(W * pct);
+        overlayCtx.save();
+        overlayCtx.strokeStyle = '#38bdf8';
+        overlayCtx.lineWidth = Math.max(2, Math.round(W / 350));
+        overlayCtx.beginPath();
+        overlayCtx.moveTo(splitX, 0);
+        overlayCtx.lineTo(splitX, H);
+        overlayCtx.stroke();
+        overlayCtx.restore();
+      }
+
+      updateCornerLoupes();
+    }
+
+    function updateCornerLoupes() {
+      if (!state.originalImageData || !state.processedImageData) return;
+      const W = state.width;
+      const H = state.height;
+      const box = computeCornerBox(W, H);
+
+      const tmp = document.createElement('canvas');
+      tmp.width = box.w;
+      tmp.height = box.h;
+      const tCtx = tmp.getContext('2d');
+
+      tCtx.putImageData(state.originalImageData, -box.x, -box.y);
+      loupeBeforeCtx.imageSmoothingEnabled = false;
+      loupeBeforeCtx.clearRect(0, 0, loupeBefore.width, loupeBefore.height);
+      loupeBeforeCtx.drawImage(tmp, 0, 0, loupeBefore.width, loupeBefore.height);
+
+      tCtx.putImageData(state.processedImageData, -box.x, -box.y);
+      loupeAfterCtx.imageSmoothingEnabled = false;
+      loupeAfterCtx.clearRect(0, 0, loupeAfter.width, loupeAfter.height);
+      loupeAfterCtx.drawImage(tmp, 0, 0, loupeAfter.width, loupeAfter.height);
+    }
+
+    function updateTelemetryReadout() {
+      const W = state.width;
+      const H = state.height;
+      const box = computeCornerBox(W, H);
+      document.getElementById('statDimensions').textContent = `${W} × ${H} px`;
+      document.getElementById('statAspectRatio').textContent = state.aspectRatioLabel;
+      document.getElementById('statTier').textContent = state.tierLabel;
+      document.getElementById('statROI').textContent = `${box.w}×${box.h} @ (${box.x},${box.y})`;
+      document.getElementById('statMargins').textContent = `R: ${state.marginX}px, B: ${state.marginY}px`;
+      document.getElementById('statConfidence').textContent = `${state.lastDetectedTag} (${(state.lastConfidence * 100).toFixed(1)}%)`;
+      document.getElementById('detectedBadge').textContent = `${state.aspectRatioLabel.split(' ')[0]} • ${box.w}px`;
+      document.getElementById('btnDownloadMain').disabled = !state.hasMedia;
+    }
+
+    // =========================================================================
+    // CANVAS MOUSE / TOUCH INTERACTION & KEYBOARD SHORTCUTS
+    // =========================================================================
+    function getCanvasCoords(evt) {
+      const rect = mainCanvas.getBoundingClientRect();
+      const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+      const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+      const scaleX = state.width / rect.width;
+      const scaleY = state.height / rect.height;
+      return {
+        x: Math.max(0, Math.min(state.width - 1, (clientX - rect.left) * scaleX)),
+        y: Math.max(0, Math.min(state.height - 1, (clientY - rect.top) * scaleY))
+      };
+    }
+
+    mainCanvas.addEventListener('mousedown', (e) => {
+      if (!state.hasMedia) return;
+      const pt = getCanvasCoords(e);
+      if (state.maskTool === 'corner') {
+        const half = state.boxSize / 2;
+        state.marginX = Math.max(0, Math.round(state.width - pt.x - half));
+        state.marginY = Math.max(0, Math.round(state.height - pt.y - half));
+        syncSlidersFromState();
+        processCurrentMedia();
+      } else if (state.maskTool === 'rect') {
+        state.isDrawing = true;
+        state.dragStart = pt;
+      } else if (state.maskTool === 'brush') {
+        state.isDrawing = true;
+        paintBrushStroke(pt.x, pt.y);
+      }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!state.isDrawing || !state.hasMedia) return;
+      const pt = getCanvasCoords(e);
+      if (state.maskTool === 'rect' && state.dragStart) {
+        state.tempRect = {
+          x: Math.min(state.dragStart.x, pt.x),
+          y: Math.min(state.dragStart.y, pt.y),
+          w: Math.abs(pt.x - state.dragStart.x),
+          h: Math.abs(pt.y - state.dragStart.y)
+        };
+        renderViewport();
+      } else if (state.maskTool === 'brush') {
+        paintBrushStroke(pt.x, pt.y);
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!state.isDrawing) return;
+      state.isDrawing = false;
+      if (state.maskTool === 'rect' && state.tempRect) {
+        if (state.tempRect.w > 4 && state.tempRect.h > 4) {
+          state.customRects.push(state.tempRect);
+        }
+        state.tempRect = null;
+        processCurrentMedia();
+      } else if (state.maskTool === 'brush') {
+        processCurrentMedia();
+      }
+    });
+
+    function paintBrushStroke(cx, cy) {
+      if (!state.userMask) state.userMask = new Uint8Array(state.width * state.height);
+      const r = Math.max(2, Math.round(state.brushSize / 2));
+      const W = state.width, H = state.height;
+      overlayCtx.fillStyle = 'rgba(244, 63, 94, 0.45)';
+      overlayCtx.beginPath();
+      overlayCtx.arc(cx, cy, r, 0, Math.PI * 2);
+      overlayCtx.fill();
+
+      for (let dy = -r; dy <= r; dy++) {
+        const py = Math.round(cy + dy);
+        if (py < 0 || py >= H) continue;
+        for (let dx = -r; dx <= r; dx++) {
+          const px = Math.round(cx + dx);
+          if (px < 0 || px >= W) continue;
+          if (dx * dx + dy * dy <= r * r) state.userMask[py * W + px] = 1;
+        }
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      const k = e.key.toLowerCase();
+      if (k === 'v') setHoldCompare(true);
+      else if (k === 'z') resetToOriginal();
+      else if (k === 'x') processCurrentMedia();
+      else if (k === 'w') nudgeBox(0, 1);
+      else if (k === 's') nudgeBox(0, -1);
+      else if (k === 'a') nudgeBox(1, 0);
+      else if (k === 'd') nudgeBox(-1, 0);
+    });
+    window.addEventListener('keyup', (e) => {
+      if (e.key.toLowerCase() === 'v') setHoldCompare(false);
+    });
+
+    // =========================================================================
+    // FILE UPLOAD & BATCH PROCESSING
+    // =========================================================================
+    const dropViewport = document.getElementById('dropViewport');
+    const emptyDropzone = document.getElementById('emptyDropzone');
+
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropViewport.addEventListener(evt, (e) => {
+        e.preventDefault();
+        emptyDropzone.classList.add('dragover');
+      });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+      dropViewport.addEventListener(evt, (e) => {
+        e.preventDefault();
+        emptyDropzone.classList.remove('dragover');
+      });
+    });
+    dropViewport.addEventListener('drop', (e) => {
+      if (e.dataTransfer && e.dataTransfer.files.length > 0) loadFilesList(e.dataTransfer.files);
+    });
+    window.addEventListener('paste', (e) => {
+      if (e.clipboardData && e.clipboardData.files.length > 0) loadFilesList(e.clipboardData.files);
+    });
+
+    function handleFileSelect(e) {
+      if (e.target.files && e.target.files.length > 0) loadFilesList(e.target.files);
+    }
+
+    function loadFilesList(fileList) {
+      const files = Array.from(fileList);
+      const videoFile = files.find(f => f.type.startsWith('video/') || /\.(mp4|webm|mov)$/i.test(f.name));
+      if (videoFile) {
+        loadLocalVideoFile(videoFile);
+        return;
+      }
+
+      const imageFiles = files.filter(f => f.type.startsWith('image/') || /\.(png|jpe?g|webp|bmp)$/i.test(f.name));
+      if (imageFiles.length === 0) {
+        showToast('Please select an image (PNG, JPG, WebP) or video (MP4, WebM)');
+        return;
+      }
+
+      switchMediaMode('image');
+      state.batchQueue = [];
+      let loadedCount = 0;
+
+      imageFiles.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const c = document.createElement('canvas');
+            c.width = img.naturalWidth;
+            c.height = img.naturalHeight;
+            const ctx = c.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            const origData = ctx.getImageData(0, 0, c.width, c.height);
+
+            state.batchQueue.push({
+              name: file.name.replace(/\.[^.]+$/, ''),
+              width: c.width,
+              height: c.height,
+              origData: origData,
+              procData: null
+            });
+
+            loadedCount++;
+            if (loadedCount === imageFiles.length) {
+              renderBatchListUI();
+              selectBatchItem(0);
+            }
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderBatchListUI() {
+      const sec = document.getElementById('batchSection');
+      const container = document.getElementById('batchListContainer');
+      const badge = document.getElementById('batchCountBadge');
+
+      if (state.batchQueue.length <= 1) {
+        sec.style.display = 'none';
+        return;
+      }
+      sec.style.display = 'flex';
+      badge.textContent = `${state.batchQueue.length} files`;
+      container.innerHTML = '';
+
+      state.batchQueue.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'batch-item' + (idx === state.activeBatchIndex ? ' active' : '');
+        div.innerHTML = `<span class="batch-name">${item.name}</span><span style="color:var(--accent); font-size:11px;">${item.width}×${item.height}</span>`;
+        div.onclick = () => selectBatchItem(idx);
+        container.appendChild(div);
+      });
+    }
+
+    function selectBatchItem(idx) {
+      const item = state.batchQueue[idx];
+      if (!item) return;
+      state.activeBatchIndex = idx;
+      activateImageWorkspace(item.origData, item.name);
+      renderBatchListUI();
+    }
+
+    function activateImageWorkspace(imgData, baseName) {
+      stopVideoPlayback();
+      document.getElementById('videoControlBar').style.display = 'none';
+      document.getElementById('emptyDropzone').style.display = 'none';
+      document.getElementById('canvasContainer').style.display = 'inline-block';
+
+      state.hasMedia = true;
+      state.fileName = baseName || 'gemini_clean';
+      state.width = imgData.width;
+      state.height = imgData.height;
+      state.originalImageData = imgData;
+      state.userMask = new Uint8Array(state.width * state.height);
+      state.customRects = [];
+
+      mainCanvas.width = state.width;
+      mainCanvas.height = state.height;
+      overlayCanvas.width = state.width;
+      overlayCanvas.height = state.height;
+
+      runSmartAutoDetect(true);
+    }
+
+    function processAllBatchImages() {
+      if (state.batchQueue.length === 0) return;
+      const mime = document.getElementById('selExportFormat').value;
+      const ext = mime === 'image/png' ? 'png' : mime === 'image/webp' ? 'webp' : 'jpg';
+
+      state.batchQueue.forEach((item) => {
+        state.width = item.width;
+        state.height = item.height;
+        state.originalImageData = item.origData;
+        runSmartAutoDetect(false);
+
+        const copy = new ImageData(new Uint8ClampedArray(item.origData.data), item.width, item.height);
+        restoreFrameBuffer(copy, item.width, item.height);
+        item.procData = copy;
+
+        const c = document.createElement('canvas');
+        c.width = item.width;
+        c.height = item.height;
+        c.getContext('2d').putImageData(copy, 0, 0);
+        c.toBlob((blob) => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `${item.name}_clean.${ext}`;
+          a.click();
+        }, mime, 0.98);
+      });
+
+      showToast(`Auto-detected & exported ${state.batchQueue.length} clean images across all ratios!`);
+    }
+
+    // =========================================================================
+    // VIDEO PIPELINE: MULTI-FRAME AUTO-DETECT & REAL-TIME RESTORATION
+    // =========================================================================
+    function loadLocalVideoFile(file) {
+      switchMediaMode('video');
+      stopVideoPlayback();
+
+      const url = URL.createObjectURL(file);
+      const vid = document.createElement('video');
+      vid.src = url;
+      vid.muted = false;
+      vid.playsInline = true;
+      vid.crossOrigin = 'anonymous';
+
+      let didInitialDetect = false;
+
+      vid.onloadedmetadata = () => {
+        state.videoEl = vid;
+        state.hasMedia = true;
+        state.fileName = file.name.replace(/\.[^.]+$/, '');
+        state.width = vid.videoWidth || 1080;
+        state.height = vid.videoHeight || 1920;
+        state.userMask = new Uint8Array(state.width * state.height);
+        state.customRects = [];
+
+        mainCanvas.width = state.width;
+        mainCanvas.height = state.height;
+        overlayCanvas.width = state.width;
+        overlayCanvas.height = state.height;
+        workCanvas.width = state.width;
+        workCanvas.height = state.height;
+
+        document.getElementById('emptyDropzone').style.display = 'none';
+        document.getElementById('canvasContainer').style.display = 'inline-block';
+        document.getElementById('videoControlBar').style.display = 'flex';
+        document.getElementById('batchSection').style.display = 'none';
+
+        vid.currentTime = Math.min(0.25, (vid.duration || 1) * 0.15);
+      };
+
+      vid.onseeked = () => {
+        if (!state.videoPlaying && !state.isExportingVideo) {
+          workCtx.drawImage(vid, 0, 0, state.width, state.height);
+          state.originalImageData = workCtx.getImageData(0, 0, state.width, state.height);
+          if (!didInitialDetect) {
+            didInitialDetect = true;
+            runSmartAutoDetect(true);
+          } else {
+            renderCurrentVideoFrame();
+          }
+        }
+      };
+
+      vid.ontimeupdate = () => updateVideoTimelineUI();
+      vid.onended = () => {
+        state.videoPlaying = false;
+        document.getElementById('btnPlayPause').textContent = '▶ Play';
+      };
+    }
+
+    function renderCurrentVideoFrame() {
+      if (!state.videoEl) return;
+      const W = state.width;
+      const H = state.height;
+      workCtx.drawImage(state.videoEl, 0, 0, W, H);
+      const frameOrig = workCtx.getImageData(0, 0, W, H);
+      state.originalImageData = frameOrig;
+
+      const frameClean = new ImageData(new Uint8ClampedArray(frameOrig.data), W, H);
+      restoreFrameBuffer(frameClean, W, H);
+      state.processedImageData = frameClean;
+
+      renderViewport();
+      updateTelemetryReadout();
+    }
+
+    function toggleVideoPlay() {
+      if (!state.videoEl) return;
+      if (state.videoPlaying) {
+        stopVideoPlayback();
+      } else {
+        state.videoPlaying = true;
+        document.getElementById('btnPlayPause').textContent = '⏸ Pause';
+        state.videoEl.play();
+        const loop = () => {
+          if (!state.videoPlaying) return;
+          renderCurrentVideoFrame();
+          state.videoAnimId = requestAnimationFrame(loop);
+        };
+        state.videoAnimId = requestAnimationFrame(loop);
+      }
+    }
+
+    function stopVideoPlayback() {
+      state.videoPlaying = false;
+      if (state.videoAnimId) cancelAnimationFrame(state.videoAnimId);
+      if (state.videoEl && !state.videoEl.paused) state.videoEl.pause();
+      const btn = document.getElementById('btnPlayPause');
+      if (btn) btn.textContent = '▶ Play';
+    }
+
+    function seekVideo(pct) {
+      if (!state.videoEl || !state.videoEl.duration) return;
+      state.videoEl.currentTime = (pct / 100) * state.videoEl.duration;
+      updateVideoTimelineUI();
+    }
+
+    function updateVideoTimelineUI() {
+      if (!state.videoEl) return;
+      const cur = state.videoEl.currentTime || 0;
+      const dur = state.videoEl.duration || 1;
+      document.getElementById('videoSeekSlider').value = ((cur / dur) * 100).toFixed(1);
+      document.getElementById('videoTimeText').textContent = `${formatSec(cur)} / ${formatSec(dur)}`;
+    }
+
+    function formatSec(s) {
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+
+    async function exportCleanVideo() {
+      if (!state.videoEl || state.isExportingVideo) return;
+      stopVideoPlayback();
+
+      state.isExportingVideo = true;
+      const progWrap = document.getElementById('videoExportProgress');
+      const progBar = document.getElementById('exportProgressBar');
+      const progPct = document.getElementById('exportPercentLabel');
+      const btnExp = document.getElementById('btnExportVideo');
+
+      progWrap.style.display = 'flex';
+      btnExp.disabled = true;
+
+      const vid = state.videoEl;
+      const W = state.width;
+      const H = state.height;
+
+      const expCanvas = document.createElement('canvas');
+      expCanvas.width = W;
+      expCanvas.height = H;
+      const expCtx = expCanvas.getContext('2d', { willReadFrequently: true });
+
+      const stream = expCanvas.captureStream(30);
+      try {
+        if (vid.captureStream) {
+          vid.captureStream().getAudioTracks().forEach(track => stream.addTrack(track));
+        } else if (vid.mozCaptureStream) {
+          vid.mozCaptureStream().getAudioTracks().forEach(track => stream.addTrack(track));
+        }
+      } catch (err) {}
+
+      const mimeTypes = [
+        'video/mp4;codecs=avc1',
+        'video/webm;codecs=vp9',
+        'video/webm;codecs=vp8',
+        'video/webm'
+      ];
+      const selectedMime = mimeTypes.find(m => MediaRecorder.isTypeSupported(m)) || 'video/webm';
+      const ext = selectedMime.includes('mp4') ? 'mp4' : 'webm';
+
+      const chunks = [];
+      const recorder = new MediaRecorder(stream, {
+        mimeType: selectedMime,
+        videoBitsPerSecond: 14_000_000
+      });
+
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) chunks.push(e.data);
+      };
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: selectedMime });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${state.fileName}_clean.${ext}`;
+        a.click();
+
+        state.isExportingVideo = false;
+        btnExp.disabled = false;
+        progWrap.style.display = 'none';
+        showToast(`Clean video exported as ${state.fileName}_clean.${ext}!`);
+      };
+
+      vid.currentTime = 0;
+      await new Promise(r => { vid.onseeked = r; });
+
+      recorder.start(100);
+      vid.play();
+
+      const renderExportLoop = () => {
+        if (!state.isExportingVideo) return;
+        if (vid.ended || vid.paused) {
+          if (recorder.state === 'recording') recorder.stop();
+          return;
+        }
+        expCtx.drawImage(vid, 0, 0, W, H);
+        const frame = expCtx.getImageData(0, 0, W, H);
+        restoreFrameBuffer(frame, W, H);
+        expCtx.putImageData(frame, 0, 0);
+        mainCtx.putImageData(frame, 0, 0);
+
+        const pct = Math.min(100, Math.round((vid.currentTime / (vid.duration || 1)) * 100));
+        progBar.style.width = `${pct}%`;
+        progPct.textContent = `${pct}%`;
+
+        requestAnimationFrame(renderExportLoop);
+      };
+      requestAnimationFrame(renderExportLoop);
+    }
+
+    function downloadCurrentResult() {
+      if (!state.hasMedia) return;
+      if (state.mediaMode === 'video') {
+        exportCleanVideo();
+        return;
+      }
+      if (!state.processedImageData) return;
+      const mime = document.getElementById('selExportFormat').value;
+      const ext = mime === 'image/png' ? 'png' : mime === 'image/webp' ? 'webp' : 'jpg';
+
+      const outCanvas = document.createElement('canvas');
+      outCanvas.width = state.width;
+      outCanvas.height = state.height;
+      outCanvas.getContext('2d').putImageData(state.processedImageData, 0, 0);
+
+      outCanvas.toBlob((blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${state.fileName}_clean.${ext}`;
+        a.click();
+        showToast(`Saved ${state.fileName}_clean.${ext} (EXIF stripped)`);
+      }, mime, 0.98);
+    }
+
+    // =========================================================================
+    // MULTI-RATIO DEMO GENERATORS (TEST ANY ASPECT RATIO & TIER INSTANTLY)
+    // =========================================================================
+    function applyForwardSignedWatermark(rgbaData, W, H, bx, by, wmSize) {
+      const sa = getCalibratedSignedAlpha(wmSize);
+      for (let ly = 0; ly < wmSize; ly++) {
+        const py = by + ly;
+        if (py < 0 || py >= H) continue;
+        for (let lx = 0; lx < wmSize; lx++) {
+          const px = bx + lx;
+          if (px < 0 || px >= W) continue;
+          const a = sa[ly * wmSize + lx];
+          const idx = (py * W + px) * 4;
+          if (a > 0.002) {
+            for (let c = 0; c < 3; c++) {
+              rgbaData[idx + c] = Math.round(a * 255.0 + (1.0 - a) * rgbaData[idx + c]);
+            }
+          } else if (a < -0.002) {
+            const ad = -a;
+            for (let c = 0; c < 3; c++) {
+              rgbaData[idx + c] = Math.round((1.0 - ad) * rgbaData[idx + c]);
+            }
+          }
+        }
+      }
+    }
+
+    function loadSelectedDemo(presetKey) {
+      const presets = {
+        '9_16_scaled': { w: 286,  h: 512,  s: 23, mx: 33,  my: 33,  name: 'demo_9x16_286x512' },
+        '16_9_1k':     { w: 1376, h: 768,  s: 48, mx: 73,  my: 73,  name: 'demo_16x9_1376x768' },
+        '9_16_1k':     { w: 768,  h: 1376, s: 48, mx: 73,  my: 73,  name: 'demo_9x16_768x1376' },
+        '16_9_1408':   { w: 1408, h: 768,  s: 46, mx: 32,  my: 32,  name: 'demo_16x9_1408x768_46px' },
+        '1_1_1k':      { w: 1024, h: 1024, s: 48, mx: 32,  my: 32,  name: 'demo_1x1_1024x1024' },
+        '4_3_1k':      { w: 1200, h: 896,  s: 48, mx: 32,  my: 32,  name: 'demo_4x3_1200x896' },
+        '3_4_1k':      { w: 896,  h: 1200, s: 48, mx: 32,  my: 32,  name: 'demo_3x4_896x1200' },
+        '3_2_2k':      { w: 2528, h: 1696, s: 96, mx: 64,  my: 64,  name: 'demo_3x2_2528x1696' },
+        '1_1_2k_r96':  { w: 2048, h: 2048, s: 48, mx: 96,  my: 96,  name: 'demo_1x1_2048x2048_r96' },
+        '16_9_2816':   { w: 2816, h: 1536, s: 96, mx: 192, my: 192, name: 'demo_16x9_2816x1536_r192' },
+        '21_9_1k':     { w: 1584, h: 672,  s: 48, mx: 32,  my: 32,  name: 'demo_21x9_1584x672' }
+      };
+      const cfg = presets[presetKey] || presets['9_16_scaled'];
+      switchMediaMode('image');
+
+      const W = cfg.w, H = cfg.h;
+      const c = document.createElement('canvas');
+      c.width = W;
+      c.height = H;
+      const ctx = c.getContext('2d');
+
+      const sky = ctx.createLinearGradient(0, 0, 0, H * 0.55);
+      sky.addColorStop(0, '#255c99');
+      sky.addColorStop(0.6, '#6ea4bf');
+      sky.addColorStop(1, '#f3c68f');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.fillStyle = '#1d4d3e';
+      ctx.beginPath();
+      ctx.moveTo(0, H * 0.45);
+      ctx.lineTo(W * 0.4, H * 0.42);
+      ctx.lineTo(W, H * 0.46);
+      ctx.lineTo(W, H);
+      ctx.lineTo(0, H);
+      ctx.fill();
+
+      // Diagonal railing lines crossing the bottom-right corner
+      ctx.strokeStyle = '#5c4742';
+      ctx.lineWidth = Math.max(4, Math.round(Math.min(W, H) / 60));
+      for (let k = 0; k < 4; k++) {
+        ctx.beginPath();
+        ctx.moveTo(W * 0.45, H * (0.60 + k * 0.08));
+        ctx.lineTo(W, H * (0.75 + k * 0.08));
+        ctx.stroke();
+      }
+
+      const imgData = ctx.getImageData(0, 0, W, H);
+      applyForwardSignedWatermark(imgData.data, W, H, W - cfg.s - cfg.mx, H - cfg.s - cfg.my, cfg.s);
+
+      state.batchQueue = [{ name: cfg.name, width: W, height: H, origData: imgData, procData: null }];
+      state.activeBatchIndex = 0;
+      renderBatchListUI();
+      activateImageWorkspace(imgData, cfg.name);
+    }
+
+    async function loadDemoVideo() {
+      switchMediaMode('video');
+      showToast('Generating 9:16 1080×1920 Veo video with 96×96 watermark @ margin (132,132)...');
+
+      const W = 1080;
+      const H = 1920;
+      const genCanvas = document.createElement('canvas');
+      genCanvas.width = W;
+      genCanvas.height = H;
+      const gCtx = genCanvas.getContext('2d');
+
+      const wmSize = 96, mx = 132, my = 132;
+      const bx = W - wmSize - mx, by = H - wmSize - my;
+
+      const stream = genCanvas.captureStream(24);
+      const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
+      const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8_000_000 });
+      const chunks = [];
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: mime });
+        const file = new File([blob], 'sample_veo_1080x1920.webm', { type: mime });
+        loadLocalVideoFile(file);
+      };
+
+      recorder.start();
+      const totalFrames = 36;
+      for (let f = 0; f < totalFrames; f++) {
+        const t = f / totalFrames;
+        const grad = gCtx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#1e293b');
+        grad.addColorStop(0.5, '#475569');
+        grad.addColorStop(1, '#57534e');
+        gCtx.fillStyle = grad;
+        gCtx.fillRect(0, 0, W, H);
+
+        gCtx.fillStyle = '#3b6e8c';
+        gCtx.beginPath();
+        gCtx.arc(W * (0.45 + 0.1 * Math.sin(t * Math.PI * 2)), H * 0.85, 280, 0, Math.PI * 2);
+        gCtx.fill();
+
+        const roi = gCtx.getImageData(bx, by, wmSize, wmSize);
+        applyForwardSignedWatermark(roi.data, wmSize, wmSize, 0, 0, wmSize);
+        gCtx.putImageData(roi, bx, by);
+
+        await new Promise(r => setTimeout(r, 25));
+      }
+      recorder.stop();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSelectedDemo('9_16_scaled');
+    });
+  </script>
+</body>
+</html>
