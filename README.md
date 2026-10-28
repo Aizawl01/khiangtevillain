@@ -1,13 +1,35 @@
-# Khiangte Villain GitHub Pages site
+# Khiangte Villain portfolio
 
-This is a standalone static site: it has no build step, secrets, backend, or API key. Upload the **contents of this folder** to the root of the `khiangtevillain` GitHub repository.
+A static GitHub Pages portfolio and Prompt Vault. It uses plain HTML, CSS, and browser JavaScript—there is no server, account system, build step, database, API client, or credential.
 
-## Publish
+## Architecture
 
-1. In GitHub, open `aizawl01/khiangtevillain`.
-2. Remove the old app files or replace them with the contents of this folder (keep this `README.md` if desired).
-3. Commit to the `main` branch.
-4. Open **Settings → Pages**. Under **Build and deployment**, choose **Deploy from a branch**, then choose `main` and `/(root)`, and save.
-5. Wait a minute or two, then open `https://aizawl01.github.io/khiangtevillain/`.
+- `index.html` is the only page entry point.
+- `styles.css` provides the site styling.
+- `script.js` contains the in-browser Prompt Vault filtering, copy, and share behavior.
+- `hero-bike.png`, `favicon.png`, and `prompt-packs/` are the published local assets.
 
-The image, music track, and three supplied PDF prompt packs are retained in this package. Edit `script.js` to add or change vault entries. The Instagram link is set to `@khiangte.villain` based on the original project watermark; change it in `index.html` if needed.
+The Prompt Vault is fully client-side. It never sends prompt content to a backend. Copy uses the browser Clipboard API with a local fallback; Share uses the Web Share API with the same copy fallback.
+
+## Deployment
+
+GitHub Pages is deployed through [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) on pushes to `main` or manual runs. The workflow creates a temporary `_site` directory and uploads only:
+
+- `index.html`
+- `styles.css`
+- `script.js`
+- `favicon.png`
+- `hero-bike.png`
+- `prompt-packs/`
+
+In **Settings → Pages**, set the source to **GitHub Actions**. Do not use “Deploy from a branch”; the root contains repository files that are not part of the published site.
+
+## Security model
+
+No secret belongs in this repository or static Pages deployment. The site contains no Gemini, Google, or other API key, and the Pages workflow does not read or inject secrets.
+
+If a Gemini key was used by an earlier deployment, rotate or revoke it in Google AI Studio / Google Cloud and remove the obsolete `API_KEY` Actions secret from this repository. Historical Pages artifacts and prior deployments should be treated as potentially exposed until that credential is rotated.
+
+## Local preview
+
+Open `index.html` in a browser. For Clipboard API behavior closest to production, serve the folder from a local web server rather than opening it with a `file:` URL.
