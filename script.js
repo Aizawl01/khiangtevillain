@@ -24,25 +24,34 @@ const prompts=[
 const grid=document.querySelector('#prompt-grid');
 const filters=document.querySelectorAll('.filter');
 const toast=document.querySelector('#toast');
+const search=document.querySelector('#prompt-search');
+const more=document.querySelector('#more-prompts');
+let activeCategory='all', visibleLimit=6, toastTimer;
 
 function showToast(message){
+  clearTimeout(toastTimer);
   toast.textContent=message;
   toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'),1800);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),2400);
 }
 
 async function copyPrompt(text){
+  let copied=false;
   try{
     await navigator.clipboard.writeText(text);
+    copied=true;
   }catch{
+    const previousFocus=document.activeElement;
     const area=document.createElement('textarea');
     area.value=text;
+    area.style.cssText='position:fixed;top:0;left:0;opacity:0';
+    area.setAttribute('aria-label','Prompt to copy');
     document.body.append(area);
-    area.select();
-    document.execCommand('copy');
-    area.remove();
+    try { area.select(); copied=document.execCommand('copy'); } catch {}
+    finally { area.remove(); previousFocus?.focus({preventScroll:true}); }
   }
-  showToast('PROMPT COPIED');
+  showToast(copied?'PROMPT COPIED':'Copy unavailable. Select and copy the prompt text.');
+  return copied;
 }
 
 async function sharePrompt(item){
@@ -57,34 +66,59 @@ async function sharePrompt(item){
   await copyPrompt(item.text);
 }
 
-function render(category='all'){
-  const visiblePrompts=prompts
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function render(category=activeCategory){
+  activeCategory=category;
+  const query=search.value.trim().toLowerCase();
+  const matching=prompts
     .map((prompt,index)=>({prompt,index}))
-    .filter(({prompt})=>category==='all'||prompt.category===category);
-
-  grid.innerHTML=visiblePrompts.map(({prompt,index},position)=>`<article class="prompt-card">
-    <div class="card-meta"><span>${prompt.category}</span><span>${String(position+1).padStart(2,'0')}</span></div>
-    <h3>${prompt.title}</h3>
-    <p class="prompt-copy">${prompt.text}</p>
+    .filter(({prompt})=>(category==='all'||prompt.category===category)
+      && (prompt.title+' '+prompt.text+' '+prompt.category).toLowerCase().includes(query));
+  const visible=matching.slice(0,visibleLimit);
+  grid.innerHTML=visible.map(({prompt,index},position)=>`<article class="prompt-card">
+    <div class="card-meta"><span>${escapeHTML(prompt.category)}</span><span>${String(position+1).padStart(2,'0')}</span></div>
+    <h3>${escapeHTML(prompt.title)}</h3>
+    <p class="prompt-copy">${escapeHTML(prompt.text)}</p>
     <div class="card-actions">
-      <button class="mini-button" type="button" data-copy="${index}">Copy prompt</button>
-      <button class="mini-button" type="button" data-share="${index}">Share</button>
+      <button class="mini-button" type="button" data-copy="${index}" aria-label="Copy ${escapeHTML(prompt.title)}">Copy prompt</button>
+      <button class="mini-button" type="button" data-share="${index}" aria-label="Share ${escapeHTML(prompt.title)}">Share</button>
     </div>
   </article>`).join('');
-
-  grid.querySelectorAll('[data-copy]').forEach(button=>{
-    button.addEventListener('click',()=>copyPrompt(prompts[Number(button.dataset.copy)].text));
-  });
-  grid.querySelectorAll('[data-share]').forEach(button=>{
-    button.addEventListener('click',()=>sharePrompt(prompts[Number(button.dataset.share)]));
+  document.querySelector('#prompt-count').textContent=matching.length
+    ? 'Showing '+visible.length+' of '+matching.length+' prompts'
+    : 'No prompts found. Try another search or category.';
+  more.hidden=visible.length>=matching.length;
+  more.textContent='Show more prompts ('+(matching.length-visible.length)+' remaining)';
+  filters.forEach(filter=>{
+    const selected=filter.dataset.category===category;
+    filter.classList.toggle('active',selected);
+    filter.setAttribute('aria-pressed',String(selected));
   });
 }
 
+grid.addEventListener('click',event=>{
+  const button=event.target.closest('button[data-copy],button[data-share]');
+  if(!button) return;
+  const index=Number(button.dataset.copy??button.dataset.share);
+  const item=prompts[index];
+  if(!item) return;
+  if(button.hasAttribute('data-copy')) copyPrompt(item.text);
+  else sharePrompt(item);
+});
 filters.forEach(button=>button.addEventListener('click',()=>{
-  filters.forEach(filter=>filter.classList.remove('active'));
-  button.classList.add('active');
+  visibleLimit=6;
   render(button.dataset.category);
 }));
-
+search.addEventListener('input',()=>{visibleLimit=6;render();});
+more.addEventListener('click',()=>{
+  const previousCount=grid.children.length;
+  visibleLimit+=6;
+  render();
+  const nextCard=grid.children[previousCount];
+  if(nextCard){nextCard.tabIndex=-1;nextCard.focus({preventScroll:true});}
+});
 render();
 document.querySelector('#year').textContent=new Date().getFullYear();
+
