@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Signal Hunt — a free micro-game from KhiangteVillain AI.">
+  <meta name="theme-color" content="#080914">
+  <title>Signal Hunt — KhiangteVillain AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="game.css">
+</head>
+<body>
+  <a class="skip-link" href="#hunt">Skip to game</a>
+  <div class="game-grid" aria-hidden="true"></div>
+  <main id="hunt" class="game-shell">
+    <header class="game-nav"><a class="game-logo" href="../" aria-label="Return to KhiangteVillain AI">KV<span>///</span></a><a class="return-link" href="../">Exit game ↗</a></header>
+    <section class="game-intro">
+      <p class="eyebrow">Free micro-game / no login</p>
+      <h1>SIGNAL<br><em>HUNT.</em></h1>
+      <p class="game-copy">Three rogue transmissions escaped the Villain world. Find each beacon, stabilise the signal, unlock the broadcast.</p>
+    </section>
+    <section class="hunt-console" aria-labelledby="console-title">
+      <div class="console-top"><p id="console-title">VILLAIN NETWORK // LIVE</p><p><span id="signal-count">0</span> / 3 signals stabilised</p></div>
+      <div id="signal-board" class="signal-board" role="group" aria-label="Find the three signal beacons">
+        <div class="radar-ring ring-one" aria-hidden="true"></div><div class="radar-ring ring-two" aria-hidden="true"></div>
+        <button class="beacon beacon-a" type="button" data-signal="AIZAWL" aria-pressed="false"><span>01</span><i aria-hidden="true">✦</i><strong>AIZAWL</strong></button>
+        <button class="beacon beacon-b" type="button" data-signal="SOUND" aria-pressed="false"><span>02</span><i aria-hidden="true">✦</i><strong>SOUND</strong></button>
+        <button class="beacon beacon-c" type="button" data-signal="CODE" aria-pressed="false"><span>03</span><i aria-hidden="true">✦</i><strong>CODE</strong></button>
+        <div class="scanner" aria-hidden="true"></div>
+      </div>
+      <p id="game-status" class="game-status" role="status" aria-live="polite">Tap the hidden signal beacons before the scanner finds them.</p>
+      <div class="game-actions"><button id="restart-game" type="button">Reset hunt</button><a id="transmission-link" href="../#film" hidden>Open unlocked transmission ↗</a></div>
+    </section>
+  </main>
+  <footer>© 2026 KHIANGTEVILLAIN AI · BUILT FOR THE WEIRD FUTURE</footer>
+  <script src="game.js" defer></script>
+</body>
+</html>

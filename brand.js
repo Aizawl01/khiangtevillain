@@ -59,8 +59,25 @@ function initPageSignal() {
   addEventListener('pointerdown', addSignal, {passive:true});
 }
 
+function initScrollGlitch() {
+  let quietTimer;
+  const root = document.documentElement;
+  const stop = () => root.classList.remove('is-scrolling');
+  const flash = () => {
+    if (reduceMotion.matches || root.classList.contains('motion-paused')) return;
+    root.classList.add('is-scrolling');
+    clearTimeout(quietTimer);
+    quietTimer = setTimeout(stop, 130);
+  };
+  addEventListener('scroll', flash, {passive:true});
+  document.addEventListener('motionchange', () => {
+    if (root.classList.contains('motion-paused')) stop();
+  });
+}
+
 initSignalBoot();
 initPageSignal();
+initScrollGlitch();
 try { initMotion(document.querySelector('.hero-art')); }
 catch { console.info('The portfolio remains available without motion.'); }
 
