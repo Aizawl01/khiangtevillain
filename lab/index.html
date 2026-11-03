@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#080914">
   <meta name="description" content="KhiangteVillain Signal Lab — local image and video effects.">
   <title>Signal Lab — KhiangteVillain AI</title>
-  <link rel="stylesheet" href="lab.css">
+  <link rel="stylesheet" href="lab.css?v=2">
 </head>
 <body>
   <header><a class="brand" href="../">KV<span>///</span></a><p>SIGNAL LAB / LOCAL EFFECTS</p><a href="../">EXIT ↗</a></header>
@@ -18,7 +18,7 @@
       <p id="file-status" class="micro">USE THE VILLAIN SIGNAL OR ADD YOUR OWN</p>
       <button id="official">USE VILLAIN ART</button>
       <section><h2>01 / EFFECTS</h2><div id="effects" class="effect-list">
-        <button data-effect="ascii">○ ASCII</button><button data-effect="dither">○ DITHERING</button><button data-effect="halftone">○ HALFTONE</button><button data-effect="matrix">○ MATRIX RAIN</button><button data-effect="dots">○ DOTS</button><button data-effect="contour">○ CONTOUR</button><button data-effect="pixelsort">○ PIXEL SORT</button><button data-effect="blockify">○ BLOCKIFY</button><button data-effect="threshold">○ THRESHOLD</button><button data-effect="edges">○ EDGE DETECTION</button><button data-effect="crosshatch">○ CROSSHATCH</button><button data-effect="waves">○ WAVE LINES</button><button data-effect="noise">○ NOISE FIELD</button><button data-effect="voronoi">○ VORONOI</button><button data-effect="vhs">○ VHS</button>
+        <button data-effect="ascii">ASCII</button><button data-effect="dither">DITHERING</button><button data-effect="halftone">HALFTONE</button><button data-effect="matrix">MATRIX RAIN</button><button data-effect="dots">DOTS</button><button data-effect="contour">CONTOUR</button><button data-effect="pixelsort">PIXEL SORT</button><button data-effect="blockify">BLOCKIFY</button><button data-effect="threshold">THRESHOLD</button><button data-effect="edges">EDGE DETECTION</button><button data-effect="crosshatch">CROSSHATCH</button><button data-effect="waves">WAVE LINES</button><button data-effect="noise">NOISE FIELD</button><button data-effect="voronoi">VORONOI</button><button data-effect="vhs">VHS</button>
       </div></section>
       <section><h2>02 / PRESETS</h2><div class="preset-list"><button data-preset="classic">CLASSIC TERMINAL</button><button data-preset="matrix">MATRIX</button><button data-preset="crt">RETRO CRT</button><button data-preset="detail">HIGH DETAIL</button><button data-preset="minimal">MINIMAL</button><button data-preset="cyberpunk">CYBERPUNK</button></div></section>
     </aside>
@@ -31,14 +31,14 @@
       <section><h2>03 / TUNING</h2>
         <label>BRIGHTNESS <output id="brightness-out">0</output><input id="brightness" type="range" min="-50" max="50" value="0"></label>
         <label>CONTRAST <output id="contrast-out">0</output><input id="contrast" type="range" min="-50" max="50" value="0"></label>
-        <label>GRAIN <output id="grain-out">15</output><input id="grain" type="range" min="0" max="80" value="15"></label>
+        <label>GRAIN <output id="grain-out">8</output><input id="grain" type="range" min="0" max="80" value="8"></label>
         <label>SCANLINES <output id="scanlines-out">18</output><input id="scanlines" type="range" min="0" max="80" value="18"></label>
-        <label>GLITCH <output id="glitch-out">10</output><input id="glitch" type="range" min="0" max="60" value="10"></label>
+        <label>GLITCH <output id="glitch-out">22</output><input id="glitch" type="range" min="0" max="60" value="22"></label>
       </section>
       <section><h2>04 / EXPORT</h2><p class="micro">EXPORTS SAVE TO YOUR DEVICE.</p><button id="png" class="accent">SAVE PNG</button><button id="video">RECORD 6S WEBM</button></section>
       <section class="privacy"><h2>PRIVATE BY DESIGN</h2><p>Your file stays in this tab. Reloading clears it.</p></section>
     </aside>
   </main>
-  <script type="module" src="lab.js"></script>
+  <script type="module" src="lab.js?v=2"></script>
 </body>
 </html>
