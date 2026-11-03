@@ -2,3 +2,4 @@
 
 .gemini-button{border-color:rgba(237,236,229,.35);display:inline-flex;align-items:center;gap:8px;background:linear-gradient(110deg,rgba(66,133,244,.16),rgba(157,78,221,.18),rgba(217,255,54,.11));}.gemini-button:hover{background:linear-gradient(110deg,#4285f4,#a142f4,#ff3e9d);border-color:transparent;color:#fff}.gemini-mark{width:16px;height:16px;fill:currentColor;filter:drop-shadow(0 0 7px rgba(178,120,255,.65));}
 .game-button{border-color:var(--pink);background:linear-gradient(120deg,#ff3e9d22,#4feaff18);box-shadow:0 0 28px -10px #ff3e9d}.game-button:hover{background:var(--pink);border-color:var(--pink);color:var(--ink)}
+.cloud-button{border-color:#4feaff;background:linear-gradient(120deg,#4feaff20,#d9ff3614);box-shadow:0 0 28px -11px #4feaff}.cloud-button:hover{background:#4feaff;border-color:#4feaff;color:var(--ink)}

@@ -32,6 +32,7 @@ jobs:
           cp assets/character.webp assets/portrait.webp assets/brand.webp assets/brand-film.mp4 assets/three.module.js assets/three.core.js assets/FLAQ-LICENSE.txt assets/THREE-LICENSE.txt _site/assets/
           cp -R prompt-packs _site/prompt-packs
           cp -R game _site/game
+          cp -R cloud _site/cloud
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
