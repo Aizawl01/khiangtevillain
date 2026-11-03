@@ -5,16 +5,8 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const boot = document.querySelector('#signal-boot');
 const skipBoot = document.querySelector('#skip-boot');
 
-function canStore() {
-  try { localStorage.setItem('__kv_test', '1'); localStorage.removeItem('__kv_test'); return true; }
-  catch { return false; }
-}
-
 function initSignalBoot() {
-  if (!boot) return;
-  const storageAvailable = canStore();
-  const alreadySeen = storageAvailable && localStorage.getItem('kv-signal-boot') === 'seen';
-  if (alreadySeen || reduceMotion.matches) return;
+  if (!boot || reduceMotion.matches) return;
 
   let finished = false;
   const onKeydown = event => { if (event.key === 'Escape') finish(); };
@@ -25,7 +17,6 @@ function initSignalBoot() {
     boot.classList.add('is-leaving');
     boot.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('booting');
-    if (storageAvailable) localStorage.setItem('kv-signal-boot', 'seen');
     setTimeout(() => boot.remove(), 720);
   };
 

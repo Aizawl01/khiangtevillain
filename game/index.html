@@ -2,37 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Signal Hunt — a free micro-game from KhiangteVillain AI.">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="description" content="Villain Run: Frequency Zero — a free one-thumb runner from KhiangteVillain AI.">
   <meta name="theme-color" content="#080914">
-  <title>Signal Hunt — KhiangteVillain AI</title>
+  <title>Villain Run: Frequency Zero — KhiangteVillain AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="game.css">
 </head>
 <body>
-  <a class="skip-link" href="#hunt">Skip to game</a>
-  <div class="game-grid" aria-hidden="true"></div>
-  <main id="hunt" class="game-shell">
+  <a class="skip-link" href="#game">Skip to game</a>
+  <main id="game" class="game-shell">
     <header class="game-nav"><a class="game-logo" href="../" aria-label="Return to KhiangteVillain AI">KV<span>///</span></a><a class="return-link" href="../">Exit game ↗</a></header>
-    <section class="game-intro">
-      <p class="eyebrow">Free micro-game / no login</p>
-      <h1>SIGNAL<br><em>HUNT.</em></h1>
-      <p class="game-copy">Three rogue transmissions escaped the Villain world. Find each beacon, stabilise the signal, unlock the broadcast.</p>
-    </section>
-    <section class="hunt-console" aria-labelledby="console-title">
-      <div class="console-top"><p id="console-title">VILLAIN NETWORK // LIVE</p><p><span id="signal-count">0</span> / 3 signals stabilised</p></div>
-      <div id="signal-board" class="signal-board" role="group" aria-label="Find the three signal beacons">
-        <div class="radar-ring ring-one" aria-hidden="true"></div><div class="radar-ring ring-two" aria-hidden="true"></div>
-        <button class="beacon beacon-a" type="button" data-signal="AIZAWL" aria-pressed="false"><span>01</span><i aria-hidden="true">✦</i><strong>AIZAWL</strong></button>
-        <button class="beacon beacon-b" type="button" data-signal="SOUND" aria-pressed="false"><span>02</span><i aria-hidden="true">✦</i><strong>SOUND</strong></button>
-        <button class="beacon beacon-c" type="button" data-signal="CODE" aria-pressed="false"><span>03</span><i aria-hidden="true">✦</i><strong>CODE</strong></button>
-        <div class="scanner" aria-hidden="true"></div>
+    <section class="game-intro"><p class="eyebrow">Free browser game / no login</p><h1>FREQUENCY<br><em>ZERO.</em></h1><p>Run the rain-lit rooftop relay. Jump obstacles, catch signals, and build the night’s beat.</p></section>
+    <section class="runner-shell" aria-labelledby="runner-title">
+      <div class="game-hud"><p id="runner-title">VILLAIN RUN // NIGHT SHIFT</p><p><span id="score">0000</span> SCORE</p><p><span id="best-score">0000</span> BEST</p></div>
+      <div class="runner-stage">
+        <canvas id="runner-canvas" width="720" height="1100" aria-label="Villain Run game canvas. Tap or press space to jump; collect frequency signals and avoid rooftop obstacles.">Your browser does not support this game canvas.</canvas>
+        <div id="game-screen" class="game-screen">
+          <p class="screen-kicker">DAILY SEED // <span id="daily-seed"></span></p>
+          <h2>READY<br><em>TO RUN?</em></h2>
+          <p>Tap anywhere or press Space to jump.<br>Collect frequency signals. Avoid the rooftop grid.</p>
+          <button id="start-run" type="button">Start Night Shift ↗</button>
+        </div>
       </div>
-      <p id="game-status" class="game-status" role="status" aria-live="polite">Tap the hidden signal beacons before the scanner finds them.</p>
-      <div class="game-actions"><button id="restart-game" type="button">Reset hunt</button><a id="transmission-link" href="../#film" hidden>Open unlocked transmission ↗</a></div>
+      <div class="runner-bottom"><p id="run-status" role="status" aria-live="polite">Tap to launch. Every signal layers another sound into the run.</p><div class="runner-controls"><button id="sound-toggle" type="button" aria-pressed="false">Sound off</button><button id="restart-run" type="button">Restart run</button></div></div>
     </section>
+    <section class="game-meta"><div><span>CONTROL</span><strong>TAP / SPACE</strong><p>Jump, then double-jump over the skyline.</p></div><div><span>GOAL</span><strong>BUILD THE BEAT</strong><p>Signals add kick, synth, bass, and score.</p></div><div><span>RETENTION</span><strong>DAILY NIGHT SHIFT</strong><p>Same local seed each day. Beat your best.</p></div></section>
   </main>
   <footer>© 2026 KHIANGTEVILLAIN AI · BUILT FOR THE WEIRD FUTURE</footer>
   <script src="game.js" defer></script>
