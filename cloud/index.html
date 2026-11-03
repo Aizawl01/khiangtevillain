@@ -18,11 +18,12 @@
       <div id="stage" class="stage">
         <div class="hud hud-top"><span id="point-count">— POINTS</span><span id="status">OFFICIAL SIGNAL LOADED</span></div>
         <div id="webgl" class="webgl" role="img" aria-label="Interactive 3D particle cloud. Drag to turn it, scroll or pinch to zoom, and tap to send a particle burst."></div>
+        <img id="upload-preview" class="upload-preview" alt="Your selected image preview" hidden>
         <div class="hud hud-bottom"><span>DRAG / TURN</span><span>SCROLL / ZOOM</span><span>TAP / BURST</span></div>
         <div id="fallback" class="fallback" hidden><img src="../assets/character.webp" alt="Official KhiangteVillain artwork"><p>3D mode is unavailable on this browser. Your image can still remain private here.</p></div>
       </div>
       <aside id="controls" class="controls">
-        <div class="control-title"><p>01 / IMAGE</p><label class="upload" for="image-input">DROP OR CHOOSE IMAGE<input id="image-input" type="file" accept="image/jpeg,image/png,image/webp,image/avif"></label><button id="official" type="button">USE VILLAIN ART</button><small>JPG, PNG, WebP or AVIF · 25 MB max · processed locally</small></div>
+        <div class="control-title"><p>01 / IMAGE</p><label class="upload" for="image-input">DROP OR CHOOSE IMAGE<input id="image-input" type="file" accept="image/*"></label><button id="official" type="button">USE VILLAIN ART</button><small>Image file · 25 MB max · processed locally</small></div>
         <div class="control-group"><label for="depth">DEPTH <output id="depth-out">58</output></label><input id="depth" type="range" min="10" max="100" value="58"></div>
         <div class="control-group"><label for="spread">SCATTER <output id="spread-out">18</output></label><input id="spread" type="range" min="0" max="60" value="18"></div>
         <div class="control-group"><label for="density">DENSITY <output id="density-out">HIGH</output></label><input id="density" type="range" min="0" max="2" value="1" step="1"></div>
