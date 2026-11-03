@@ -43,6 +43,7 @@ jobs:
           cp -R lab _site/lab-v9
           cp -R lab _site/lab-v10
           cp -R lab _site/lab-v11
+          cp -R lab _site/lab-v12
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
