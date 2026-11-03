@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#080914">
   <meta name="description" content="KhiangteVillain Signal Lab — local image and video effects.">
   <title>Signal Lab — KhiangteVillain AI</title>
-  <link rel="stylesheet" href="lab.css?v=3">
+  <link rel="stylesheet" href="lab.css?v=6">
 </head>
 <body>
   <header><a class="brand" href="../">KV<span>///</span></a><p>SIGNAL LAB / LOCAL EFFECTS</p><a href="../">EXIT ↗</a></header>
@@ -28,17 +28,18 @@
       <p class="hint">SCROLL / ZOOM · DRAG / PAN · EFFECTS RUN LOCALLY</p>
     </section>
     <aside class="panel right">
-      <section><h2>03 / TUNING</h2>
+      <section><h2>03 / EFFECT SETTINGS</h2><p id="effect-name" class="micro">SELECT AN EFFECT</p><div id="effect-tuning" class="effect-tuning"><p class="micro">Choose an effect on the left to tune its own signal.</p></div></section>
+      <section><h2>04 / GLOBAL TUNING</h2>
         <label>BRIGHTNESS <output id="brightness-out">0</output><input id="brightness" type="range" min="-50" max="50" value="0"></label>
         <label>CONTRAST <output id="contrast-out">0</output><input id="contrast" type="range" min="-50" max="50" value="0"></label>
         <label>GRAIN <output id="grain-out">8</output><input id="grain" type="range" min="0" max="80" value="8"></label>
         <label>SCANLINES <output id="scanlines-out">18</output><input id="scanlines" type="range" min="0" max="80" value="18"></label>
         <label>GLITCH <output id="glitch-out">22</output><input id="glitch" type="range" min="0" max="60" value="22"></label>
       </section>
-      <section><h2>04 / EXPORT</h2><p class="micro">EXPORTS SAVE TO YOUR DEVICE.</p><button id="png" class="accent">SAVE PNG</button><button id="video">RECORD 6S WEBM</button></section>
+      <section><h2>05 / EXPORT</h2><p class="micro">EXPORTS SAVE TO YOUR DEVICE.</p><button id="png" class="accent">SAVE PNG</button><button id="video">RECORD 6S WEBM</button></section>
       <section class="privacy"><h2>PRIVATE BY DESIGN</h2><p>Your file stays in this tab. Reloading clears it.</p></section>
     </aside>
   </main>
-  <script type="module" src="lab.js?v=5"></script>
+  <script type="module" src="lab.js?v=6"></script>
 </body>
 </html>
