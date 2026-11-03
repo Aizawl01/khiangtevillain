@@ -34,6 +34,7 @@ jobs:
           cp -R game _site/game
           cp -R cloud _site/cloud
           cp -R lab _site/lab
+          cp -R lab _site/lab-v3
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
