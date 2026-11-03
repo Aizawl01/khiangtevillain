@@ -10,7 +10,7 @@ const controls = {depth:document.querySelector('#depth'), spread:document.queryS
 const outputs = {depth:document.querySelector('#depth-out'), spread:document.querySelector('#spread-out'), density:document.querySelector('#density-out')};
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
-let renderer, scene, camera, cloud, material, basePositions, targetDepth = 58, targetScatter = .18;
+let renderer, scene, camera, cloud, material, basePositions, particleSeeds, targetDepth = 58, targetScatter = .18;
 let yaw = .18, pitch = -.08, zoom = 1, burst = 3, pointerDown = false, lastPoint, raf;
 const densityNames = ['LOW','HIGH','MAX'];
 
@@ -57,10 +57,10 @@ function buildCloud(image) {
   if (cloud) { scene.remove(cloud); cloud.geometry.dispose(); }
   material?.dispose();
   const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geometry.setAttribute('aSeed',new THREE.Float32BufferAttribute(seeds,1));
-  material=new THREE.ShaderMaterial({transparent:true,depthWrite:false,vertexColors:true,uniforms:{uTime:{value:0},uScatter:{value:targetScatter},uDepth:{value:targetDepth/100},uBurst:{value:3},uPixel:{value:Math.min(devicePixelRatio,1.5)}},vertexShader:`attribute float aSeed; attribute vec3 color; varying vec3 vColor; uniform float uTime,uScatter,uDepth,uBurst,uPixel; void main(){vColor=color;vec3 p=position;p.z*=1.+uDepth*2.2;float wave=sin(aSeed*48.+uTime*1.2);vec3 dir=normalize(vec3(sin(aSeed*87.),cos(aSeed*43.),sin(aSeed*157.)));p+=dir*(uScatter*.9+sin(uTime+aSeed*30.)*.016);p+=dir*exp(-uBurst*2.)*sin(uBurst*18.+aSeed*22.)*.55;vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=(1.2+uDepth*2.8)*uPixel*(3.7/-mv.z);gl_Position=projectionMatrix*mv;}`,fragmentShader:`varying vec3 vColor;void main(){float d=length(gl_PointCoord-.5);if(d>.5)discard;float a=smoothstep(.5,.05,d);gl_FragColor=vec4(vColor,a*.92);}`});
-  cloud=new THREE.Points(geometry,material);scene.add(cloud);basePositions=positions;pointCount.textContent=`${positions.length.toLocaleString()} POINTS`;
+  material=new THREE.PointsMaterial({size:.023,vertexColors:true,transparent:true,opacity:.94,depthWrite:false,sizeAttenuation:true});
+  cloud=new THREE.Points(geometry,material);scene.add(cloud);basePositions=new Float32Array(positions);particleSeeds=new Float32Array(seeds);pointCount.textContent=`${positions.length.toLocaleString()} POINTS`;
 }
-function render(time) { raf=requestAnimationFrame(render); if(!renderer||!cloud)return; material.uniforms.uTime.value=time*.001;material.uniforms.uScatter.value+=(targetScatter-material.uniforms.uScatter.value)*.08;material.uniforms.uDepth.value+=(targetDepth/100-material.uniforms.uDepth.value)*.08;burst+=.028;material.uniforms.uBurst.value=burst;cloud.rotation.y+=(yaw-cloud.rotation.y)*.08;cloud.rotation.x+=(pitch-cloud.rotation.x)*.08;camera.position.z+=(4.05/zoom-camera.position.z)*.08;renderer.render(scene,camera); }
+function render(time) { raf=requestAnimationFrame(render); if(!renderer||!cloud)return; const positions=cloud.geometry.attributes.position.array, t=time*.001, burstWave=Math.exp(-burst*2.2)*.52, depth=targetDepth/100; for(let i=0,j=0;i<particleSeeds.length;i++,j+=3){const seed=particleSeeds[i],dx=Math.sin(seed*87.1),dy=Math.cos(seed*43.3),dz=Math.sin(seed*157.7);const drift=targetScatter*.86+Math.sin(t+seed*30)*.012+burstWave*Math.sin(burst*18+seed*22);positions[j]=basePositions[j]+dx*drift;positions[j+1]=basePositions[j+1]+dy*drift;positions[j+2]=basePositions[j+2]*(1+depth*2.2)+dz*drift;} cloud.geometry.attributes.position.needsUpdate=true; burst+=.028;cloud.rotation.y+=(yaw-cloud.rotation.y)*.08;cloud.rotation.x+=(pitch-cloud.rotation.x)*.08;camera.position.z+=(4.05/zoom-camera.position.z)*.08;renderer.render(scene,camera); }
 
 Object.values(controls).forEach(control=>control.addEventListener('input',updateReadouts));
 document.querySelector('#burst').addEventListener('click',fire);document.querySelector('#reset').addEventListener('click',resetView);document.querySelector('#official').addEventListener('click',()=>loadImage('../assets/character.webp','OFFICIAL SIGNAL LOADED'));
