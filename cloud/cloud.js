@@ -1,5 +1,3 @@
-import * as THREE from '../assets/three.module.js';
-
 const stage = document.querySelector('#stage');
 const host = document.querySelector('#webgl');
 const fallback = document.querySelector('#fallback');
@@ -10,59 +8,22 @@ const controls = {depth:document.querySelector('#depth'), spread:document.queryS
 const outputs = {depth:document.querySelector('#depth-out'), spread:document.querySelector('#spread-out'), density:document.querySelector('#density-out')};
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
-let renderer, scene, camera, cloud, material, basePositions, particleSeeds, targetDepth = 58, targetScatter = .18;
-let yaw = .18, pitch = -.08, zoom = 1, burst = 3, pointerDown = false, lastPoint, raf;
+let canvas, ctx, points = [], yaw = .18, pitch = -.08, zoom = 1, burst = 3, targetDepth = .58, scatter = .18, pointerDown = false, lastPoint;
 const densityNames = ['LOW','HIGH','MAX'];
 
-function updateReadouts() { outputs.depth.value = controls.depth.value; outputs.spread.value = controls.spread.value; outputs.density.value = densityNames[controls.density.value]; targetDepth = Number(controls.depth.value); targetScatter = Number(controls.spread.value) / 100; }
-function fire() { burst = 0; status.textContent = 'SIGNAL SENT // PARTICLES LIVE'; }
-function resetView() { yaw=.18; pitch=-.08; zoom=1; targetScatter=.18; controls.spread.value=18; updateReadouts(); status.textContent='VIEW RESET // SIGNAL STABLE'; }
-
-function setup() {
-  try {
-    renderer = new THREE.WebGLRenderer({alpha:true,antialias:false,powerPreference:'high-performance'});
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-    renderer.setSize(stage.clientWidth, stage.clientHeight); host.append(renderer.domElement);
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(34, stage.clientWidth / stage.clientHeight, .1, 20);
-    camera.position.z = 4.05;
-    scene.add(new THREE.AmbientLight(0xffffff,.1));
-    addEventListener('resize', resize, {passive:true});
-    new ResizeObserver(resize).observe(stage);
-    stage.addEventListener('pointerdown', startDrag);
-    stage.addEventListener('pointermove', drag);
-    stage.addEventListener('pointerup', stopDrag);
-    stage.addEventListener('pointercancel', stopDrag);
-    stage.addEventListener('wheel', event => { event.preventDefault(); zoom = Math.max(.65,Math.min(1.55,zoom - event.deltaY*.0007)); }, {passive:false});
-    stage.addEventListener('click', event => { if (!event.target.closest('button,input,label')) fire(); });
-    requestAnimationFrame(render);
-    loadImage('../assets/character.webp', 'OFFICIAL SIGNAL LOADED');
-  } catch { fallback.hidden=false; status.textContent='3D MODE UNAVAILABLE'; }
-}
-function resize() { if (!renderer) return; const w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix(); }
-function startDrag(event) { if(event.target.closest('button,input,label')) return; pointerDown=true;lastPoint={x:event.clientX,y:event.clientY};stage.setPointerCapture?.(event.pointerId); }
-function drag(event) { if(!pointerDown) return; yaw+=(event.clientX-lastPoint.x)*.006; pitch=Math.max(-.8,Math.min(.8,pitch+(event.clientY-lastPoint.y)*.006));lastPoint={x:event.clientX,y:event.clientY}; }
+function updateReadouts() { outputs.depth.value=controls.depth.value;outputs.spread.value=controls.spread.value;outputs.density.value=densityNames[controls.density.value];targetDepth=Number(controls.depth.value)/100;scatter=Number(controls.spread.value)/100; }
+function fire(){burst=0;status.textContent='SIGNAL SENT // PARTICLES LIVE';}
+function resetView(){yaw=.18;pitch=-.08;zoom=1;controls.spread.value=18;updateReadouts();status.textContent='VIEW RESET // SIGNAL STABLE';}
+function resize(){if(!canvas)return;const dpr=Math.min(devicePixelRatio||1,1.5),w=stage.clientWidth,h=stage.clientHeight;canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);canvas.style.width=`${w}px`;canvas.style.height=`${h}px`;ctx.setTransform(dpr,0,0,dpr,0,0);}
+function setup(){try{canvas=document.createElement('canvas');canvas.setAttribute('aria-hidden','true');host.append(canvas);ctx=canvas.getContext('2d',{alpha:true});resize();new ResizeObserver(resize).observe(stage);addEventListener('resize',resize,{passive:true});stage.addEventListener('pointerdown',startDrag);stage.addEventListener('pointermove',drag);stage.addEventListener('pointerup',stopDrag);stage.addEventListener('pointercancel',stopDrag);stage.addEventListener('wheel',event=>{event.preventDefault();zoom=Math.max(.62,Math.min(1.65,zoom-event.deltaY*.0007));},{passive:false});stage.addEventListener('click',event=>{if(!event.target.closest('button,input,label'))fire();});loadImage('../assets/character.webp','OFFICIAL SIGNAL LOADED');requestAnimationFrame(render);}catch{fallback.hidden=false;status.textContent='PARTICLE MODE UNAVAILABLE';}}
+function startDrag(event){if(event.target.closest('button,input,label'))return;pointerDown=true;lastPoint={x:event.clientX,y:event.clientY};stage.setPointerCapture?.(event.pointerId);}
+function drag(event){if(!pointerDown)return;yaw+=(event.clientX-lastPoint.x)*.006;pitch=Math.max(-.8,Math.min(.8,pitch+(event.clientY-lastPoint.y)*.006));lastPoint={x:event.clientX,y:event.clientY};}
 function stopDrag(){pointerDown=false;}
-function loadImage(src, message) { const image=new Image(); image.onload=()=>{buildCloud(image);status.textContent=message;}; image.onerror=()=>{fallback.hidden=false;status.textContent='IMAGE COULD NOT LOAD';}; image.src=src; }
-function buildCloud(image) {
-  if (!renderer) return;
-  const density = Number(controls.density.value);
-  const maxWidth = [82,120,158][density];
-  const ratio = image.naturalHeight / image.naturalWidth;
-  const canvas=document.createElement('canvas'); canvas.width=maxWidth;canvas.height=Math.max(74,Math.min(190,Math.round(maxWidth*ratio)));
-  const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0,canvas.width,canvas.height);
-  const pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;
-  const positions=[],colors=[],seeds=[]; const cut=Math.max(1,density===2?1:2);
-  for(let y=0;y<canvas.height;y+=cut){for(let x=0;x<canvas.width;x+=cut){const i=(y*canvas.width+x)*4;const a=pixels[i+3];if(a<100)continue;const r=pixels[i]/255,g=pixels[i+1]/255,b=pixels[i+2]/255;const l=(r+g+b)/3;if(l<.055&&Math.random()>.12)continue;const nx=(x/canvas.width-.5)*2.35,ny=-(y/canvas.height-.5)*2.85;const z=(l-.5)*.72+Math.sin(x*.19)*.025;positions.push(nx,ny,z);const cyan=Math.max(g,b),pink=Math.max(r,b*.6);colors.push(Math.min(1,r*.35+pink*.55),Math.min(1,g*.35+cyan*.5),Math.min(1,b*.55+cyan*.35));seeds.push(Math.random());}}
-  if (cloud) { scene.remove(cloud); cloud.geometry.dispose(); }
-  material?.dispose();
-  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geometry.setAttribute('aSeed',new THREE.Float32BufferAttribute(seeds,1));
-  material=new THREE.PointsMaterial({size:.023,vertexColors:true,transparent:true,opacity:.94,depthWrite:false,sizeAttenuation:true});
-  cloud=new THREE.Points(geometry,material);scene.add(cloud);basePositions=new Float32Array(positions);particleSeeds=new Float32Array(seeds);pointCount.textContent=`${positions.length.toLocaleString()} POINTS`;
-}
-function render(time) { raf=requestAnimationFrame(render); if(!renderer||!cloud)return; const positions=cloud.geometry.attributes.position.array, t=time*.001, burstWave=Math.exp(-burst*2.2)*.52, depth=targetDepth/100; for(let i=0,j=0;i<particleSeeds.length;i++,j+=3){const seed=particleSeeds[i],dx=Math.sin(seed*87.1),dy=Math.cos(seed*43.3),dz=Math.sin(seed*157.7);const drift=targetScatter*.86+Math.sin(t+seed*30)*.012+burstWave*Math.sin(burst*18+seed*22);positions[j]=basePositions[j]+dx*drift;positions[j+1]=basePositions[j+1]+dy*drift;positions[j+2]=basePositions[j+2]*(1+depth*2.2)+dz*drift;} cloud.geometry.attributes.position.needsUpdate=true; burst+=.028;cloud.rotation.y+=(yaw-cloud.rotation.y)*.08;cloud.rotation.x+=(pitch-cloud.rotation.x)*.08;camera.position.z+=(4.05/zoom-camera.position.z)*.08;renderer.render(scene,camera); }
+function loadImage(src,message){const image=new Image();image.onload=()=>{buildCloud(image);status.textContent=message;};image.onerror=()=>{fallback.hidden=false;status.textContent='IMAGE COULD NOT LOAD';};image.src=src;}
+function buildCloud(image){const maxWidth=[76,116,154][Number(controls.density.value)],ratio=image.naturalHeight/image.naturalWidth,source=document.createElement('canvas');source.width=maxWidth;source.height=Math.max(72,Math.min(190,Math.round(maxWidth*ratio)));const sourceCtx=source.getContext('2d',{willReadFrequently:true});sourceCtx.drawImage(image,0,0,source.width,source.height);const pixels=sourceCtx.getImageData(0,0,source.width,source.height).data;const step=Number(controls.density.value)===2?1:2;points=[];for(let y=0;y<source.height;y+=step){for(let x=0;x<source.width;x+=step){const index=(y*source.width+x)*4,a=pixels[index+3];if(a<100)continue;const r=pixels[index],g=pixels[index+1],b=pixels[index+2],light=(r+g+b)/765;if(light<.06&&Math.random()>.13)continue;points.push({x:(x/source.width-.5)*2.34,y:-(y/source.height-.5)*2.85,z:(light-.5)*.75,seed:Math.random()*6.283,r:Math.min(255,r*.42+b*.28+40),g:Math.min(255,g*.42+b*.38+45),b:Math.min(255,b*.62+68)});}}pointCount.textContent=`${points.length.toLocaleString()} POINTS`;}
+function render(time){requestAnimationFrame(render);if(!ctx||!canvas)return;const w=stage.clientWidth,h=stage.clientHeight,scale=Math.min(w,h)*.41,cy=Math.cos(yaw),sy=Math.sin(yaw),cx=Math.cos(pitch),sx=Math.sin(pitch),burstPower=Math.exp(-burst*2.2)*.52;ctx.clearRect(0,0,w,h);const glow=ctx.createRadialGradient(w*.5,h*.45,8,w*.5,h*.45,Math.max(w,h)*.6);glow.addColorStop(0,'#173b64');glow.addColorStop(.42,'#0b1530');glow.addColorStop(1,'#05060d');ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);for(const point of points){const drift=scatter*.9+Math.sin(time*.001+point.seed*5)*.014+burstPower*Math.sin(burst*18+point.seed*12);const px=point.x+Math.sin(point.seed*11)*drift,py=point.y+Math.cos(point.seed*7)*drift,pz=point.z*(1+targetDepth*2.2)+Math.sin(point.seed*17)*drift;const x1=px*cy-pz*sy,z1=px*sy+pz*cy,y1=py*cx-z1*sx,z2=py*sx+z1*cx,depth=1/(2.7+z2),x=w*.5+x1*scale*zoom*depth*2.8,y=h*.5+y1*scale*zoom*depth*2.8;if(x<-3||x>w+3||y<-3||y>h+3)continue;const size=Math.max(.65,2.7*depth*zoom*2.8);ctx.fillStyle=`rgb(${point.r|0},${point.g|0},${point.b|0})`;ctx.fillRect(x,y,size,size);}burst+=.028;}
 
-Object.values(controls).forEach(control=>control.addEventListener('input',updateReadouts));
+Object.values(controls).forEach(control=>control.addEventListener('input',()=>{updateReadouts();if(control===controls.density)loadImage('../assets/character.webp','DENSITY UPDATED // OFFICIAL SIGNAL');}));
 document.querySelector('#burst').addEventListener('click',fire);document.querySelector('#reset').addEventListener('click',resetView);document.querySelector('#official').addEventListener('click',()=>loadImage('../assets/character.webp','OFFICIAL SIGNAL LOADED'));
-input.addEventListener('change',event=>{const file=event.target.files?.[0];if(!file)return;if(file.size>10*1024*1024){status.textContent='IMAGE TOO LARGE // 10 MB MAX';input.value='';return;}const url=URL.createObjectURL(file);loadImage(url,'YOUR SIGNAL LOADED // LOCAL ONLY');setTimeout(()=>URL.revokeObjectURL(url),3000);});
+input.addEventListener('change',event=>{const file=event.target.files?.[0];if(!file)return;if(file.size>10*1024*1024){status.textContent='IMAGE TOO LARGE // 10 MB MAX';input.value='';return;}const reader=new FileReader();reader.onload=()=>loadImage(reader.result,'YOUR SIGNAL LOADED // LOCAL ONLY');reader.readAsDataURL(file);});
 updateReadouts();if(reduceMotion.matches){fallback.hidden=false;status.textContent='REDUCED MOTION MODE';}else setup();
