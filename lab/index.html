@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#080914">
   <meta name="description" content="KhiangteVillain Signal Lab — local image and video effects.">
   <title>Signal Lab — KhiangteVillain AI</title>
-  <link rel="stylesheet" href="lab.css?v=12">
+  <link rel="stylesheet" href="lab.css?v=13">
 </head>
 <body>
   <header><a class="brand" href="../">KV<span>///</span></a><p>SIGNAL LAB / LOCAL EFFECTS</p><a href="../">EXIT ↗</a></header>
@@ -35,10 +35,10 @@
       <details class="tuning-group" open><summary>− COLOR</summary><label>MODE<select data-tune="colorMode" id="color-mode"><option value="original">ORIGINAL</option><option value="mono">MONO</option><option value="neon">NEON</option></select></label><label>BACKGROUND <input data-tune="background" id="background" type="color" value="#080914"></label><label>INTENSITY <output id="intensity-out">1.0</output><input data-tune="intensity" id="intensity" type="range" min="0" max="1" step="0.1" value="1"></label></details>
       <details class="tuning-group"><summary>+ PROCESSING</summary><label class="check"><input data-tune="invert" type="checkbox"> INVERT</label><label>BRIGHTNESS MAP <output id="brightnessMap-out">1.0</output><input data-tune="brightnessMap" id="brightnessMap" type="range" min="0" max="2" step="0.1" value="1"></label><label>EDGE ENHANCE <output id="edgeEnhance-out">0</output><input data-tune="edgeEnhance" id="edgeEnhance" type="range" min="0" max="100" value="0"></label><label>BLUR <output id="blur-out">0.0</output><input data-tune="blur" id="blur" type="range" min="0" max="12" step="0.5" value="0"></label><label>QUANTIZE COLORS <output id="quantize-out">0</output><input data-tune="quantize" id="quantize" type="range" min="0" max="32" value="0"></label></details>
       <details class="tuning-group"><summary>+ POST-PROCESSING</summary><label class="check"><input data-tune="bloom" type="checkbox"> BLOOM</label><label class="check"><input data-tune="grainOn" type="checkbox" checked> GRAIN</label><label>INTENSITY <output id="grainIntensity-out">35</output><input data-tune="grainIntensity" id="grainIntensity" type="range" min="0" max="80" value="35"></label><label>SIZE <output id="grainSize-out">2</output><input data-tune="grainSize" id="grainSize" type="range" min="1" max="6" value="2"></label><label>SPEED <output id="grainSpeed-out">50</output><input data-tune="grainSpeed" id="grainSpeed" type="range" min="0" max="100" value="50"></label><label class="check"><input data-tune="chromatic" type="checkbox"> CHROMATIC</label><label class="check"><input data-tune="scanlineOn" type="checkbox" checked> SCANLINES</label><label class="check"><input data-tune="vignette" type="checkbox"> VIGNETTE</label><label class="check"><input data-tune="crt" type="checkbox"> CRT CURVE</label><label class="check"><input data-tune="phosphor" type="checkbox"> PHOSPHOR</label></details>
-      <section><h2>05 / EXPORT</h2><p id="export-status" class="micro">EXPORTS SAVE TO YOUR DEVICE.</p><div class="export-types"><button id="png-type" class="active">PNG<small>.png</small></button><button id="jpeg">JPEG<small>.jpg</small></button><button disabled>GIF<small>.gif</small></button><button id="video">VIDEO<small>.webm</small></button></div><button id="png" class="accent">EXPORT PNG</button></section>
+      <section><h2>05 / EXPORT</h2><p id="export-status" class="micro">CHOOSE A FORMAT, THEN EXPORT.</p><div class="export-types" role="group" aria-label="Export format"><button type="button" data-export-format="png" class="active" aria-pressed="true">PNG<small>.png</small></button><button type="button" data-export-format="jpeg" aria-pressed="false">JPEG<small>.jpg</small></button><button type="button" disabled>GIF<small>.gif</small></button><button type="button" data-export-format="video" aria-pressed="false">VIDEO<small>.webm</small></button></div><button id="export" type="button" class="accent">EXPORT PNG</button></section>
       <section class="privacy"><h2>PRIVATE BY DESIGN</h2><p>Your file stays in this tab. Reloading clears it.</p></section>
     </aside>
   </main>
-  <script type="module" src="lab.js?v=12"></script>
+  <script type="module" src="lab.js?v=13"></script>
 </body>
 </html>
