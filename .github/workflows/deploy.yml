@@ -35,6 +35,7 @@ jobs:
           cp -R cloud _site/cloud
           cp -R lab _site/lab
           cp -R lab _site/lab-v3
+          cp -R lab _site/lab-v4
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
