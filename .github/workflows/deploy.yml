@@ -25,26 +25,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Assemble static site
-        run: |
-          mkdir -p _site
-          cp index.html styles.css script.js brand.css brand.js learning.css mizo-prompts.js motion.js motion.css favicon.png _site/
-          mkdir -p _site/assets
-          cp assets/character.webp assets/portrait.webp assets/brand.webp assets/brand-film.mp4 assets/three.module.js assets/three.core.js assets/FLAQ-LICENSE.txt assets/THREE-LICENSE.txt _site/assets/
-          cp -R prompt-packs _site/prompt-packs
-          cp -R game _site/game
-          cp -R cloud _site/cloud
-          cp -R lab _site/lab
-          cp -R lab _site/lab-v3
-          cp -R lab _site/lab-v4
-          cp -R lab _site/lab-v5
-          cp -R lab _site/lab-v6
-          cp -R lab _site/lab-v7
-          cp -R lab _site/lab-v8
-          cp -R lab _site/lab-v9
-          cp -R lab _site/lab-v10
-          cp -R lab _site/lab-v11
-          cp -R lab _site/lab-v12
-          cp -R lab _site/lab-v13
+        run: node scripts/build-static.mjs
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
