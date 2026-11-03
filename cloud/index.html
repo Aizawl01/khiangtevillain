@@ -18,6 +18,7 @@
       <div id="stage" class="stage">
         <div class="hud hud-top"><span id="point-count">— POINTS</span><span id="status">OFFICIAL SIGNAL LOADED</span></div>
         <div id="webgl" class="webgl" role="img" aria-label="Interactive 3D particle cloud. Drag to turn it, scroll or pinch to zoom, and tap to send a particle burst."></div>
+        <div id="starter" class="starter"><span>OFFICIAL EXAMPLE</span><strong>THIS IMAGE IS MADE OF LIGHT POINTS.</strong><p>Upload your own image, then enable AI depth when you want the 3D version.</p></div>
         <img id="upload-preview" class="upload-preview" alt="Your selected image preview" hidden>
         <div class="hud hud-bottom"><span>DRAG / TURN</span><span>SCROLL / ZOOM</span><span>TAP / BURST</span></div>
         <div id="fallback" class="fallback" hidden><img src="../assets/character.webp" alt="Official KhiangteVillain artwork"><p>3D mode is unavailable on this browser. Your image can still remain private here.</p></div>
@@ -25,7 +26,7 @@
       <aside id="controls" class="controls">
         <div class="control-title"><p>01 / IMAGE</p><label class="upload" for="image-input">DROP OR CHOOSE IMAGE<input id="image-input" type="file" accept="image/*"></label><button id="official" type="button">USE VILLAIN ART</button><button id="depth-ai" type="button">ENABLE AI DEPTH</button><small>Image file · 25 MB max · processed locally</small></div>
         <div class="control-group"><label for="depth">DEPTH <output id="depth-out">58</output></label><input id="depth" type="range" min="10" max="100" value="58"></div>
-        <div class="control-group"><label for="spread">SCATTER <output id="spread-out">18</output></label><input id="spread" type="range" min="0" max="60" value="18"></div>
+        <div class="control-group"><label for="spread">SCATTER <output id="spread-out">0</output></label><input id="spread" type="range" min="0" max="60" value="0"></div>
         <div class="control-group"><label for="density">DENSITY <output id="density-out">HIGH</output></label><input id="density" type="range" min="0" max="2" value="1" step="1"></div>
         <div class="buttons"><button id="burst" class="accent" type="button">SEND SIGNAL ↗</button><button id="reset" type="button">RESET VIEW</button><button id="save-image" type="button">SAVE PNG</button><button id="save-video" type="button">RECORD 6S</button></div>
         <p class="privacy">PRIVATE BY DESIGN<br><span>The image is read in this browser tab only. Reload or leave the page and it is gone.</span></p>
@@ -34,6 +35,6 @@
     <section class="notes"><div><span>ONE IMAGE</span><strong>YOUR FACE. YOUR ART. YOUR SIGNAL.</strong></div><div><span>YOUR HANDS</span><strong>ROTATE, ZOOM, SCATTER, BURST.</strong></div><div><span>NO CLOUD</span><strong>NO ACCOUNT. NO IMAGE STORAGE.</strong></div></section>
   </main>
   <footer>© 2026 KHIANGTEVILLAIN AI · BUILT FOR THE WEIRD FUTURE</footer>
-  <script type="module" src="cloud.js?v=4"></script>
+  <script type="module" src="cloud.js?v=5"></script>
 </body>
 </html>
