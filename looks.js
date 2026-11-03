@@ -1,0 +1,42 @@
+(() => {
+  const consoleEl = document.querySelector('.looks-console');
+  const cards = [...document.querySelectorAll('.look-card')];
+  const openButton = document.querySelector('#open-look');
+  const dialog = document.querySelector('#look-dialog');
+  const closeButton = document.querySelector('.dialog-close');
+  const title = document.querySelector('#look-dialog-title');
+  const summary = document.querySelector('#look-dialog-summary');
+  const prompt = document.querySelector('#look-dialog-prompt');
+  const copy = document.querySelector('#copy-look');
+  const status = document.querySelector('#look-status');
+  const summaries = {
+    smear: 'A cinematic codec-fragment treatment that keeps the creator readable and the signal in motion.',
+    flash: 'A modern Aizawl night portrait where a direct flash cuts through rain and colour.',
+    crt: 'An intentional analogue-broadcast treatment with scan lines and a late-night archive feel.',
+    dither: 'A graphic black-ink approach for posters, covers and bold first frames.',
+    phosphor: 'A restrained cyan-and-pink glow treatment built for the KhiangteVillain world.',
+    receipt: 'A collectible thermal-print layout for release announcements, track drops and event artwork.'
+  };
+  let selected = cards[0];
+  const select = (card, open = false) => {
+    selected = card;
+    cards.forEach(item => item.classList.toggle('active', item === card));
+    const { look, number, title: cardTitle, copy: cardCopy } = card.dataset;
+    consoleEl.dataset.activeLook = look;
+    status.textContent = `${number} / ${cardTitle.toUpperCase()}`;
+    openButton.textContent = `Open ${cardTitle} brief ↗`;
+    title.textContent = cardTitle;
+    summary.textContent = summaries[look];
+    prompt.value = cardCopy;
+    if (open) dialog.showModal();
+  };
+  cards.forEach(card => card.addEventListener('click', () => select(card)));
+  openButton.addEventListener('click', () => { select(selected); dialog.showModal(); });
+  closeButton.addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+  copy.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(prompt.value); copy.textContent = 'Copied ✓'; }
+    catch { prompt.focus(); prompt.select(); document.execCommand('copy'); copy.textContent = 'Copied ✓'; }
+    window.setTimeout(() => { copy.textContent = 'Copy prompt'; }, 1800);
+  });
+})();
