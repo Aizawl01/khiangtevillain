@@ -33,6 +33,7 @@ jobs:
           cp -R prompt-packs _site/prompt-packs
           cp -R game _site/game
           cp -R cloud _site/cloud
+          cp -R lab _site/lab
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

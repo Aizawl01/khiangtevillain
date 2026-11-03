@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080914">
+  <meta name="description" content="KhiangteVillain Signal Lab — local image and video effects.">
+  <title>Signal Lab — KhiangteVillain AI</title>
+  <link rel="stylesheet" href="lab.css">
+</head>
+<body>
+  <header><a class="brand" href="../">KV<span>///</span></a><p>SIGNAL LAB / LOCAL EFFECTS</p><a href="../">EXIT ↗</a></header>
+  <main class="layout">
+    <aside class="panel left">
+      <h1>SIGNAL<br><em>LAB.</em></h1>
+      <p class="lede">Transform an image or video in this browser. No account. No upload.</p>
+      <label class="upload" for="file">DROP / CHOOSE MEDIA<input id="file" type="file" accept="image/*,video/mp4,video/webm"></label>
+      <p id="file-status" class="micro">USE THE VILLAIN SIGNAL OR ADD YOUR OWN</p>
+      <button id="official">USE VILLAIN ART</button>
+      <section><h2>01 / EFFECTS</h2><div id="effects" class="effect-list">
+        <button data-effect="vhs">○ VHS GLITCH</button><button data-effect="dither">○ DITHER</button><button data-effect="dots">○ DOT FIELD</button><button data-effect="halftone">○ HALFTONE</button><button data-effect="matrix">○ MATRIX RAIN</button><button data-effect="edges">○ EDGE TRACE</button>
+      </div></section>
+      <section><h2>02 / PRESETS</h2><div class="preset-list"><button data-preset="clean">CLEAN SIGNAL</button><button data-preset="night">NEON NIGHT</button><button data-preset="terminal">TERMINAL GHOST</button><button data-preset="broadcast">LOST BROADCAST</button></div></section>
+    </aside>
+    <section class="viewer">
+      <div class="viewer-bar"><span id="mode">VILLAIN ART / READY</span><span id="resolution">—</span></div>
+      <canvas id="canvas" aria-label="Signal Lab preview"></canvas>
+      <p class="hint">SCROLL / ZOOM · DRAG / PAN · EFFECTS RUN LOCALLY</p>
+    </section>
+    <aside class="panel right">
+      <section><h2>03 / TUNING</h2>
+        <label>BRIGHTNESS <output id="brightness-out">0</output><input id="brightness" type="range" min="-50" max="50" value="0"></label>
+        <label>CONTRAST <output id="contrast-out">0</output><input id="contrast" type="range" min="-50" max="50" value="0"></label>
+        <label>GRAIN <output id="grain-out">15</output><input id="grain" type="range" min="0" max="80" value="15"></label>
+        <label>SCANLINES <output id="scanlines-out">18</output><input id="scanlines" type="range" min="0" max="80" value="18"></label>
+        <label>GLITCH <output id="glitch-out">10</output><input id="glitch" type="range" min="0" max="60" value="10"></label>
+      </section>
+      <section><h2>04 / EXPORT</h2><p class="micro">EXPORTS SAVE TO YOUR DEVICE.</p><button id="png" class="accent">SAVE PNG</button><button id="video">RECORD 6S WEBM</button></section>
+      <section class="privacy"><h2>PRIVATE BY DESIGN</h2><p>Your file stays in this tab. Reloading clears it.</p></section>
+    </aside>
+  </main>
+  <script type="module" src="lab.js"></script>
+</body>
+</html>
