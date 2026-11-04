@@ -7,25 +7,30 @@
   const prompt = document.querySelector('#look-dialog-prompt');
   const copy = document.querySelector('#copy-look');
   const summaries = {
-    smear: 'A cinematic codec-fragment treatment that keeps the creator readable and the signal in motion.',
-    flash: 'A modern Aizawl night portrait where a direct flash cuts through rain and colour.',
-    crt: 'An intentional analogue-broadcast treatment with scan lines and a late-night archive feel.',
-    dither: 'A graphic black-ink approach for posters, covers and bold first frames.',
-    phosphor: 'A restrained cyan-and-pink glow treatment built for the KhiangteVillain world.',
-    receipt: 'A collectible thermal-print layout for release announcements, track drops and event artwork.',
-    datamosh: 'A real generated example built from a codec-damage brief: hard blocks, clean image area, no fake glitch overlay.'
+    datamosh: 'Real generated result: a Mizo creator on a rain-wet Aizawl lane, broken by hard codec blocks.',
+    blob: 'Real generated result: a Mizo portrait with imperfect computer-vision detections over the photograph.',
+    flash: 'Real generated result: direct flash, monsoon rain and an Aizawl rooftop café.',
+    receipt: 'Real generated result: a fictional thermal-paper artifact from an Aizawl shared-taxi night.',
+    crt: 'Real generated result: one contemporary Mizo subject inside an analogue broadcast frame.',
+    dither: 'Real generated result: a rain-day Aizawl street reduced to one-bit ink and paper.',
+    phosphor: 'Real generated result: one Mizo night scene drawn in overdriven magenta phosphor.'
   };
+  let sourcePrompts = {};
+  const promptsReady = fetch('assets/trendy-prompts.json')
+    .then(response => response.ok ? response.json() : [])
+    .then(items => { sourcePrompts = Object.fromEntries(items.map(item => [item.n, item.prompt])); })
+    .catch(() => {});
   let selected = cards[0];
   const select = (card, open = true) => {
     selected = card;
     cards.forEach(item => item.classList.toggle('active', item === card));
-    const { look, number, title: cardTitle, copy: cardCopy } = card.dataset;
+    const { look, title: cardTitle, copy: cardCopy, promptId } = card.dataset;
     title.textContent = cardTitle;
     summary.textContent = summaries[look];
-    prompt.value = cardCopy;
+    prompt.value = sourcePrompts[promptId] || cardCopy || 'Prompt loading…';
     if (open) dialog.showModal();
   };
-  cards.forEach(card => card.addEventListener('click', () => select(card)));
+  cards.forEach(card => card.addEventListener('click', async () => { await promptsReady; select(card); }));
   closeButton.addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
   copy.addEventListener('click', async () => {
