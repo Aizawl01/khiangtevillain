@@ -12,7 +12,8 @@
     crt: 'An intentional analogue-broadcast treatment with scan lines and a late-night archive feel.',
     dither: 'A graphic black-ink approach for posters, covers and bold first frames.',
     phosphor: 'A restrained cyan-and-pink glow treatment built for the KhiangteVillain world.',
-    receipt: 'A collectible thermal-print layout for release announcements, track drops and event artwork.'
+    receipt: 'A collectible thermal-print layout for release announcements, track drops and event artwork.',
+    datamosh: 'A real generated example built from a codec-damage brief: hard blocks, clean image area, no fake glitch overlay.'
   };
   let selected = cards[0];
   const select = (card, open = true) => {
