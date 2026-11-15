@@ -15,6 +15,16 @@
   <link rel="stylesheet" href="learning.css">
   <link rel="stylesheet" href="motion.css">
   <link rel="stylesheet" href="looks.css?v=1">
+  <style>
+    .ccd-pack{padding:80px 0;border-top:1px solid var(--line)}
+    .ccd-pack-card{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:center;gap:clamp(26px,5vw,70px);padding:28px;border:1px solid var(--line);border-radius:20px;background:#10111d;color:var(--paper);text-decoration:none}
+    .ccd-pack-card:hover{border-color:var(--acid)}
+    .ccd-pack-card:focus-visible{outline:3px solid var(--acid);outline-offset:6px}
+    .ccd-pack-card img{display:block;width:100%;height:auto;border-radius:12px}
+    .ccd-pack-copy{min-width:0}.ccd-pack-copy h2{font-size:clamp(38px,5.5vw,72px);line-height:.95;letter-spacing:-.06em;margin:0 0 24px}.ccd-pack-copy h2 em{font-style:normal;color:var(--pink)}
+    .ccd-pack-copy>p:not(.eyebrow){color:#b8bac1;line-height:1.6;margin:0 0 26px}.ccd-pack-meta{display:block;margin-bottom:24px;color:var(--acid);font:12px/1.6 "DM Mono",monospace;text-transform:uppercase}
+    @media(max-width:760px){.ccd-pack{padding:60px 0}.ccd-pack-card{grid-template-columns:1fr;padding:18px;gap:26px}.ccd-pack-copy h2{font-size:clamp(38px,11vw,64px)}}
+  </style>
 </head>
 <body>
   <section id="signal-boot" class="signal-boot" aria-hidden="true" aria-label="KhiangteVillain signal boot sequence">
@@ -34,7 +44,7 @@
   <header class="nav wrap"><a class="logo" href="#top" aria-label="KhiangteVillain AI home">KV<span>///</span></a><nav aria-label="Main navigation"><a href="#work">Work</a><a href="#looks">Looks</a><a href="#prompts">Prompt vault</a><a href="#connect">Connect</a></nav></header>
   <main id="top">
     <section class="hero wrap" aria-label="KhiangteVillain AI">
-      <div class="hero-copy"><p class="eyebrow">Aizawl, Mizoram · India</p><h1>TECH<br><em>BENDER</em></h1><p class="intro">KhiangteVillain AI brings films, music and creative code together—turning ideas into worlds.</p><div class="actions"><a class="button primary" href="#film">Watch the brand film</a><a class="button game-button" href="game/">Play free Villain Game ↗</a><a class="button cloud-button" href="cloud/">Make a Signal Cloud ↗</a><a class="button cloud-button" href="lab-v14/">Open Signal Lab ↗</a><a class="button" href="#prompts">Explore prompt vault</a><a class="button Removed gemini-Spark" href="removespark.html" target="_blank" rel="noopener noreferrer" aria-label="Open Google Gemini in a new tab">Open Gemini ↗</a></div><p class="signal">◉ AVAILABLE FOR CREATIVE COLLABORATIONS</p></div>
+      <div class="hero-copy"><p class="eyebrow">Aizawl, Mizoram · India</p><h1>TECH<br><em>BENDER</em></h1><p class="intro">KhiangteVillain AI brings films, music and creative code together—turning ideas into worlds.</p><div class="actions"><a class="button primary" href="#film">Watch the brand film</a><a class="button game-button" href="game/">Play free Villain Game ↗</a><a class="button cloud-button" href="cloud/">Make a Signal Cloud ↗</a><a class="button cloud-button" href="lab-v14/">Open Signal Lab ↗</a><a class="button" href="#prompts">Explore prompt vault</a><a class="button gemini-button" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer" aria-label="Open Google Gemini in a new tab">Open Gemini ↗</a></div><p class="signal">◉ AVAILABLE FOR CREATIVE COLLABORATIONS</p></div>
       <div class="hero-art"><img src="assets/character.webp" width="941" height="1672" fetchpriority="high" alt="KhiangteVillain hooded character with cyan mask and neon circuits"><div class="art-label">KHIANGTEVILLAIN / AI CREATOR</div></div>
     </section>
     <section class="about"><div class="wrap"><p class="eyebrow">The creator behind the mask</p><h2>IMAGINATION.<br>WITH INTENT.</h2><p>AI films. Sound worlds. Creative code. From Aizawl, I bring story and technology together—and share the prompts and workflows along the way.</p></div></section>
@@ -45,6 +55,12 @@
     <section class="wrap shorts-dispatch" id="shorts" aria-labelledby="shorts-title">
       <div class="shorts-frame"><iframe src="https://www.youtube-nocookie.com/embed/JUQo7wQEKOI?rel=0&amp;modestbranding=1" title="Tual sumsu Mizo folklore horror — featured KhiangteVillain AI YouTube Short" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen><a href="https://www.youtube.com/shorts/JUQo7wQEKOI">Watch this Short on YouTube ↗</a></iframe></div>
       <div class="shorts-copy"><p class="eyebrow">Featured short / official YouTube</p><h2 id="shorts-title">SIGNAL<br><em>DROP.</em></h2><p class="shorts-title">Tual sumsu — Mizo folklore horror</p><p class="shorts-description">A featured horror signal from the official KhiangteVillain AI channel. Watch it here, then follow the channel for every new transmission.</p><div class="actions"><a class="button primary" href="https://www.youtube.com/shorts/JUQo7wQEKOI" target="_blank" rel="noopener">Watch the Short ↗</a><a class="button" href="https://www.youtube.com/@khiangtevillainai/shorts" target="_blank" rel="noopener">All Shorts ↗</a><a class="button" href="lab-v14/">Open Signal Lab ↗</a></div></div>
+    </section>
+    <section class="wrap ccd-pack" id="ccd-vol-1" aria-labelledby="ccd-pack-title">
+      <a class="ccd-pack-card" href="prompt-packs/ccd-vol-1/" aria-labelledby="ccd-pack-title" aria-describedby="ccd-pack-description">
+        <img src="prompt-packs/ccd-vol-1/six-looks.webp" width="1050" height="1010" loading="lazy" alt="Six CCD portrait looks: hand at lens, low flash, gloss, pillow flash, wink and winter knit">
+        <div class="ccd-pack-copy"><p class="eyebrow">Free prompt pack / CCD Vol. 1</p><h2 id="ccd-pack-title">ONE PHOTO.<br><em>SIX CCD LOOKS.</em></h2><p id="ccd-pack-description">Try the looks from the Reel. Get all six complete portrait prompts, with Aizawl and Mizoram settings, in one downloadable PDF.</p><span class="ccd-pack-meta">6 full prompts · 7-page PDF · Free download</span><span class="button primary">Get CCD Vol. 1 ↗</span></div>
+      </a>
     </section>
     <section class="wrap signal-looks" id="looks" aria-labelledby="looks-title">
       <div class="looks-heading"><p class="eyebrow">Mizoram image lab / exact-prompt transformations</p><h2 id="looks-title">SIGNAL<br><em>LOOKS.</em></h2><p>Every card is an edit of the same clean Mizo/Aizawl photograph using its matching full prompt. Open a card to copy the original prompt.</p></div>
