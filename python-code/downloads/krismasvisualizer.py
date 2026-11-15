@@ -424,6 +424,8 @@ def build_aizawl_lidar_ridges(width: int, height: int):
 
 def load_font(size: int):
     candidates = [
+        "/system/fonts/DroidSansMono.ttf",
+        "/system/fonts/RobotoMono-Regular.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
         "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf",
         "/usr/share/fonts/truetype/noto/NotoSansMono-Regular.ttf",
@@ -432,7 +434,7 @@ def load_font(size: int):
     for path in candidates:
         if os.path.exists(path):
             return ImageFont.truetype(path, size)
-    return ImageFont.load_default()
+    return ImageFont.load_default(size=size)
 
 
 def build_glyph_atlas(font):
@@ -445,14 +447,14 @@ def build_glyph_atlas(font):
     return atlas
 
 
-def main():
+def main(mobile=False, width=0, height=0, fps=FPS):
     parser = argparse.ArgumentParser(description="Live Mizo Christmas LiDAR visualizer")
     parser.add_argument(
         "--audio",
         default=str(Path(__file__).resolve().parent / "nov christmas song mizo.mp3"),
         help="Path to nov christmas song mizo.mp3 (optional if running locally without audio file)",
     )
-    args = parser.parse_args()
+    args = parser.parse_args([] if mobile else None)
 
     t_start = time.perf_counter()
     rms_env = RMS_ENV_30
@@ -506,9 +508,13 @@ def main():
     info = pygame.display.Info()
     wh = max(480, min(960, info.current_h - 100))
     ww = max(640, min(1000, info.current_w - 100))
+    if mobile:
+        from mobile_controls import TouchControls
+        controls = TouchControls(scene=True)
+        ww, wh = width or info.current_w, height or info.current_h
     window = pygame.display.set_mode((ww, wh), pygame.RESIZABLE)
     pygame.display.set_caption("Krismas Visualizer | Drag: rotate | Wheel: zoom | Space: pause | R: replay")
-    button_font = pygame.font.SysFont("segoeui", 14)
+    button_font = pygame.font.Font(None, max(20, min(36, ww//20))) if mobile else pygame.font.SysFont("segoeui", 14)
     mode_labels = ["Sky Starlight + Vocal EQ", "Mid-Screen Cipher Halo", "Snow Crest + Beat Wave"]
     mode = 0
     buttons = []
@@ -545,6 +551,27 @@ def main():
                     paused, t = False, 0.0
                 elif event.key == pygame.K_HOME:
                     yaw, tilt, zoom = 0.0, 0.0, 1.0
+            elif mobile:
+                action = controls.handle(event, window.get_size())
+                if action == 'Exit':
+                    running = False
+                elif action == 'Play':
+                    paused = not paused
+                    (pygame.mixer.music.pause if paused else pygame.mixer.music.unpause)()
+                elif action == 'Replay':
+                    pygame.mixer.music.play(loops=-1)
+                    paused, t = False, 0.0
+                elif action == 'Reset':
+                    yaw, tilt, zoom = 0.0, 0.0, 1.0
+                elif action in ('−', '+'):
+                    zoom = float(np.clip(zoom * (1.08 if action == '+' else 1/1.08), .6, 1.35))
+                elif isinstance(action, tuple) and action[0] == 'drag':
+                    yaw += action[1] * .4
+                    tilt = float(np.clip(tilt + action[2] * .25, -35, 35))
+                elif isinstance(action, tuple) and action[0] == 'tap':
+                    hit = next((i for i, rect in enumerate(buttons) if rect.collidepoint(action[1])), None)
+                    if hit is not None:
+                        mode = hit
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 hit = next((i for i, rect in enumerate(buttons) if rect.collidepoint(event.pos)), None)
                 if hit is not None:
@@ -856,21 +883,29 @@ def main():
         picture = np.clip(graded[:TOP_H], 0, 255).astype(np.uint8)
         surface = pygame.image.frombuffer(picture.tobytes(), (W, TOP_H), "RGB")
         window.fill((4, 9, 15))
-        scale = min(window.get_width() / W, (window.get_height() - 52) / TOP_H)
+        top_bar = max(52, min(100, window.get_height()//10)) if mobile else 52
+        bottom_bar = 0
+        if mobile:
+            controls.layout(window.get_size())
+            bottom_bar = controls.bar_height
+        content_height = max(1, window.get_height() - top_bar - bottom_bar)
+        scale = min(window.get_width() / W, content_height / TOP_H)
         size = (max(1, int(W * scale)), max(1, int(TOP_H * scale)))
-        window.blit(pygame.transform.smoothscale(surface, size), ((window.get_width() - size[0]) // 2, 52 + (window.get_height() - 52 - size[1]) // 2))
+        window.blit(pygame.transform.smoothscale(surface, size), ((window.get_width() - size[0]) // 2, top_bar + (content_height - size[1]) // 2))
         buttons = []
         for i, label in enumerate(mode_labels):
-            rect = pygame.Rect(i * window.get_width() // 3 + 4, 5, window.get_width() // 3 - 8, 40)
+            rect = pygame.Rect(i * window.get_width() // 3 + 4, 5, max(1, window.get_width() // 3 - 8), top_bar - 12)
             pygame.draw.rect(window, (27, 34, 43) if i == mode else (15, 18, 23), rect, border_radius=10)
             pygame.draw.rect(window, (155, 215, 245) if i == mode else (45, 55, 66), rect, 1, border_radius=10)
-            label_image = button_font.render(f"{i+1}. {label}", True, (230, 242, 255))
+            label_image = button_font.render((f"Mode {i+1}" if mobile else f"{i+1}. {label}"), True, (230, 242, 255))
             if label_image.get_width() > rect.width - 10:
                 label_image = pygame.transform.smoothscale(label_image, (max(1, rect.width - 10), label_image.get_height()))
             window.blit(label_image, label_image.get_rect(center=rect.center))
             buttons.append(rect)
+        if mobile:
+            controls.draw(window, paused)
         pygame.display.flip()
-        clock.tick(FPS)
+        clock.tick(fps)
     pygame.quit()
 
 

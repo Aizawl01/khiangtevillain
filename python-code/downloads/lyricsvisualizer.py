@@ -342,7 +342,7 @@ def find_song():
     raise SystemExit("Put ihmangaihkha.mp3 next to this script or in Downloads.")
 
 
-def main():
+def main(mobile=False, width=0, height=0, fps=FPS):
     song_path = find_song()
     random.seed(42)
     pygame.init()
@@ -351,7 +351,12 @@ def main():
 
     desktop = pygame.display.get_desktop_sizes()[0]
     win_scale = min(1.0, (desktop[0] - 40) / VIEW_W, (desktop[1] - 80) / VIEW_H)
-    preview = pygame.display.set_mode((round(VIEW_W * win_scale), round(VIEW_H * win_scale)))
+    if mobile:
+        from mobile_controls import TouchControls
+        controls = TouchControls()
+        preview = pygame.display.set_mode((width or desktop[0], height or desktop[1]), pygame.RESIZABLE)
+    else:
+        preview = pygame.display.set_mode((round(VIEW_W * win_scale), round(VIEW_H * win_scale)))
     pygame.display.set_caption("I Hmangaih Kha ♡")
     clock = pygame.time.Clock()
 
@@ -610,6 +615,8 @@ def main():
     started_at = time.perf_counter()
     prev_sim_tick = 0
     running = True
+    paused = ended = False
+    elapsed = 0.0
 
     while running:
         for event in pygame.event.get():
@@ -617,6 +624,31 @@ def main():
                 event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
             ):
                 running = False
+
+            if mobile:
+                action = controls.handle(event, preview.get_size())
+                if action == 'Exit':
+                    running = False
+                elif action == 'Replay' or (action == 'Play' and ended):
+                    pygame.mixer.music.play()
+                    started_at = time.perf_counter()
+                    prev_sim_tick = 0
+                    elapsed = 0.0
+                    paused = ended = False
+                    for particle in particles:
+                        particle.alpha = 0
+                elif action == 'Play':
+                    paused = not paused
+                    (pygame.mixer.music.pause if paused else pygame.mixer.music.unpause)()
+                    started_at = time.perf_counter() - elapsed
+
+        if not running:
+            break
+        if mobile and (paused or ended):
+            controls.draw(preview, True)
+            pygame.display.flip()
+            clock.tick(fps)
+            continue
 
         pos_ms = pygame.mixer.music.get_pos() if pygame.mixer.music.get_busy() else -1
         wall_elapsed = time.perf_counter() - started_at
@@ -697,15 +729,24 @@ def main():
         output = pygame.transform.smoothscale(heart_surface, scaled_size)
         canvas.blit(output, output.get_rect(center=(VIEW_W // 2, VIEW_H // 2)))
 
-        picture = (
-            canvas
-            if preview.get_size() == canvas.get_size()
-            else pygame.transform.smoothscale(canvas, preview.get_size())
-        )
-        preview.blit(picture, (0, 0))
+        if mobile:
+            controls.layout(preview.get_size())
+            available = (preview.get_width(), max(1, preview.get_height() - controls.bar_height))
+            scale = min(available[0] / CANVAS_W, available[1] / CANVAS_H)
+            picture = pygame.transform.smoothscale(heart_surface,
+                      (max(1, round(CANVAS_W * scale)), max(1, round(CANVAS_H * scale))))
+            preview.fill((0, 0, 0))
+            preview.blit(picture, picture.get_rect(center=(available[0]//2, available[1]//2)))
+            controls.draw(preview, paused)
+        else:
+            picture = canvas if preview.get_size() == canvas.get_size() else pygame.transform.smoothscale(canvas, preview.get_size())
+            preview.blit(picture, (0, 0))
         pygame.display.flip()
 
-        if elapsed >= DURATION + 0.3:
+        if mobile:
+            ended = elapsed >= DURATION + 0.3
+            clock.tick(fps)
+        elif elapsed >= DURATION + 0.3:
             waiting = True
             while waiting:
                 for ev in pygame.event.get():
@@ -716,7 +757,7 @@ def main():
                         running = False
                 pygame.time.wait(20)
         else:
-            clock.tick(FPS)
+            clock.tick(fps)
 
     pygame.quit()
 
