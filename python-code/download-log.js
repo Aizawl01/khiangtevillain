@@ -14,7 +14,7 @@
   let timer;
   let pending = false;
   let opener;
-  const allowedFiles = new Set(['lyric-heart.zip','lyricsvisualizer.py','krismas-lidar.zip','krismasvisualizer.py']);
+  const allowedFiles = new Set(['lyric-heart.zip','lyricsvisualizer.py','krismas-lidar.zip','krismasvisualizer.py','ascii-christmas-drama.zip']);
   function source() {
     const utm = new URL(location.href).searchParams.get('utm_source')?.toLowerCase() || '';
     let ref = '';
